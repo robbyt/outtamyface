@@ -22,7 +22,6 @@ def fp_to_list_gennerator(fp, split_type=' '):
     """
     if type(fp) is file:
         yield [row.split(split_type) for row in fp.readline()]
-        return fp
     else:
         raise Unknown_input
 
