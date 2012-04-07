@@ -218,14 +218,13 @@ def broadcast(client, msg):
             client_target.send(msg)
 
 def _whos_online(client, msg):
-    client.send("\nList of people who are currently online: ")
+    client.send("\nList of people who are currently online:\n")
     for client_name in CLIENT_LIST:
         user_id = CLIENT_STATE[client_name]['user_id']
         first_name = AUTH_DB[user_id]['first_name']
         last_name = AUTH_DB[user_id]['last_name']
         client.send("\n-")
         client.send(" ".join([first_name, last_name]))
-        client.send("\n")
     client.send("\n\n")
 
 def _new_post(client, msg):
