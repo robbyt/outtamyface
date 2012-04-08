@@ -1,20 +1,17 @@
-import hashlib
-#import imyface_data
-
-#USER_DATA = imyface_data.USER_DATA
-
-USER_DATA = {}
+#import hashlib
+from imyface_data import USER_DATA as _USER_DATA
 
 class UserExists(Exception):
     pass
 
 def is_existing_user(user_id):
     """Check to see if a user exists in the data dict
+        
     """
-    return USER_DATA.has_key(user_id)
+    return _USER_DATA.has_key(user_id)
 
 def _get_user(user_id):
-    return USER_DATA.get(user_id)
+    return _USER_DATA.get(user_id)
 
 def _new_user(last_name,
               first_name,
@@ -25,7 +22,7 @@ def _new_user(last_name,
 #    user_data['user_id'] = {'last_name':last_name,
 #                            'first_name':first_name,
 #                            'password':password,}
-    USER_DATA[user_id] = (first_name, last_name, password)
+    _USER_DATA[user_id] = (first_name, last_name, password)
 
 def enroll(first_name, 
            last_name,
@@ -40,6 +37,9 @@ def enroll(first_name,
 
 def get_user(user_id):
     return _get_user(user_id)
+
+def get_user_count():
+    return len(_USER_DATA)
 
 def outta_my_face():
     """ when a user asks another member ('the face') to be "outta my face"
