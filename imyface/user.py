@@ -18,9 +18,12 @@ def _new_user(last_name,
     """ Insert user into data dict.
         Each member of the dict must be unique, as identified by the key.
     """
+    # add new row to user_data db
     _USER_DATA[user_id] = (first_name, last_name, password)
 
+    # create an empty node in the face_data db
     _FACE_DATA.setdefault(user_id, {})
+
     if save:
         user_data.save()
 
