@@ -7,10 +7,12 @@ from imyface import user, actions
 FACE_DATA_FILE = 'demo_data/data1_connections__small-no-cycles.dat.pickle'
 
 # load users into user_data db
-# user_test.setup()
 
 def setup():
     connections_loaded = 0
+
+#    user_test.tear_down()
+#    user_test.setup()
 
     fp = open(FACE_DATA_FILE, 'rb')
     connections_list = pickle.load(fp)
@@ -22,5 +24,5 @@ def setup():
 
     return (connections_loaded, first_row)
 
-def test_connection():
-    pass
+#def test_connection():
+#    print 'crap'
