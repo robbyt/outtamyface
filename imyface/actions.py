@@ -1,4 +1,6 @@
 #import hashlib
+import logging
+logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 
 #from data_layer.user_data import USER_DATA as _USER_DATA
 from data_layer.face_data import FACE_DATA as _FACE_DATA
@@ -24,7 +26,11 @@ def connect(user1, action, user2):
         
 
 def get_face_data(user_id):
-    return _FACE_DATA[(user_id,)]
+    try:
+        return _FACE_DATA[(user_id,)]
+    except KeyError:
+        logging.warn("Problem finding face_data for: " + user_id)
+        return False
 
 def outta_my_face(user, face):
     """ when a user asks another member ('the face') to be "outta my face"
