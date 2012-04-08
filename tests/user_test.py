@@ -2,7 +2,7 @@ from nose.tools import *
 from imyface import user
 import cPickle as pickle
 
-USER_DATA_FILE = 'data/data1_faces__small-no-cycles.dat.pickle'
+USER_DATA_FILE = 'demo_data/data1_faces__small-no-cycles.dat.pickle'
 
 def tear_down():
     user._USER_DATA = {}
