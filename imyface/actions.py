@@ -23,6 +23,8 @@ def connect(user1, action, user2):
         _FACE_DATA[(user1,)][(action,)][(user2,)] = _FACE_DATA[(user2,)][(action,)]
         
 
+def get_face_data(user_id):
+    return _FACE_DATA[(user_id,)]
 
 def outta_my_face(user, face):
     """ when a user asks another member ('the face') to be "outta my face"
