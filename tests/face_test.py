@@ -31,6 +31,7 @@ def _setup():
         CONNECTIONS_LOADED += 1
 
     FIRST_ROW = connections_list[0]
+    return
 
 def _teardown():
     global CONNECTIONS_LOADED
@@ -42,3 +43,4 @@ def _teardown():
 @with_setup(setup=_setup,teardown=_teardown)
 def test_connection():
     assert_true(True)
+
