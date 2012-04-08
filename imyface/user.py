@@ -1,5 +1,6 @@
 #import hashlib
-from data.user import USER_DATA as _USER_DATA
+from data_layer import user as data
+_USER_DATA = data.USER_DATA
 
 class UserExists(Exception):
     pass
@@ -11,21 +12,18 @@ def _get_user(user_id):
 def _new_user(last_name,
               first_name,
               user_id,
-              password):
+              password,
+              save=True):
     """ Insert user into data dict.
         Each member of the dict must be unique, as identified by the key.
     """
-#    user_data['user_id'] = {'last_name':last_name,
-#                            'first_name':first_name,
-#                            'password':password,}
     _USER_DATA[user_id] = (first_name, last_name, password)
-
+    if save:
+        data.save()
 
 ## public functions 
-
 def is_existing_user(user_id):
     """Check to see if a user exists in the data dict
-        
     """
     return _USER_DATA.has_key(user_id)
 
