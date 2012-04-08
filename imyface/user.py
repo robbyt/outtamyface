@@ -1,14 +1,20 @@
 import hashlib
-from imyface_data import user_data
+#import imyface_data
 
-class User_already_exists(Exception):
+#USER_DATA = imyface_data.USER_DATA
+
+USER_DATA = {}
+
+class UserExists(Exception):
     pass
 
-
-def _is_existing_user(user_id):
+def is_existing_user(user_id):
     """Check to see if a user exists in the data dict
     """
-    return user_data.has_key(user_id)
+    return USER_DATA.has_key(user_id)
+
+def _get_user(user_id):
+    return USER_DATA.get(user_id)
 
 def _new_user(last_name,
               first_name,
@@ -16,20 +22,24 @@ def _new_user(last_name,
               password):
     """Insert user into data dict
     """
-    user_data['user_id'] = {'last_name':last_name,
-                            'first_name':first_name,
-                            'password':password,}
+#    user_data['user_id'] = {'last_name':last_name,
+#                            'first_name':first_name,
+#                            'password':password,}
+    USER_DATA[user_id] = (first_name, last_name, password)
 
-def enroll(last_name, 
-           first_name,
+def enroll(first_name, 
+           last_name,
            user_id,
            password):
     """ Allows a user to provide basic information
     """
-    if _is_existing_user(user_id):
+    if not is_existing_user(user_id):
         _new_user(last_name, first_name, user_id, password)
     else:
-        raise User_already_exists("Found existing user %s in db" % (user_id))
+        raise UserExists("Found existing user %s in db" % (user_id))
+
+def get_user(user_id):
+    return _get_user(user_id)
 
 def outta_my_face():
     """ when a user asks another member ('the face') to be "outta my face"

@@ -1,2 +1,2 @@
 
-data = {}
+USER_DATA = {}
