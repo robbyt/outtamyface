@@ -1,5 +1,8 @@
 from nose.tools import *
 from imyface import user
+
+from imyface.data_layer import user_data, face_data
+
 import cPickle as pickle
 
 USER_DATA_FILE = 'demo_data/data1_faces__small-no-cycles.dat.pickle'
@@ -49,6 +52,11 @@ def test_enroll_one():
     u = user.get_user(uid)
     assert_equal(u, (fn, ln, pw))
 
+def test_empty_face_data(uid='jsmith'):
+    """ We just created this user, so the face_data should be empty.
+    """
+    assert_equal(face_data.FACE_DATA[uid], {})
+
 def test_no_dupes():
     """ Make sure that dupe users cannot be enrolled
     """
@@ -91,5 +99,5 @@ def test_dupe_names():
     assert_equal(u1_ln, u2_ln)
     assert_equal(u1_pw, u2_pw)
 
-
+    tear_down()
 
