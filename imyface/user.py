@@ -1,5 +1,5 @@
 #import hashlib
-from imyface_data import USER_DATA as _USER_DATA
+from data.user import USER_DATA as _USER_DATA
 
 class UserExists(Exception):
     pass
