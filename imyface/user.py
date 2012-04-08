@@ -1,6 +1,7 @@
 #import hashlib
-from data_layer import user_data
+from data_layer import user_data, face_data
 _USER_DATA = user_data.USER_DATA
+_FACE_DATA = face_data.FACE_DATA
 
 class UserExists(Exception):
     pass
@@ -18,6 +19,8 @@ def _new_user(last_name,
         Each member of the dict must be unique, as identified by the key.
     """
     _USER_DATA[user_id] = (first_name, last_name, password)
+
+    _FACE_DATA.setdefault(user_id, {})
     if save:
         user_data.save()
 

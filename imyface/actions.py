@@ -1,12 +1,10 @@
 #import hashlib
-from data_layer import user_data
-from data_layer import face_data
+from data_layer import user_data, face_data
 
 _USER_DATA = user_data.USER_DATA
 _FACE_DATA = face_data.FACE_DATA
 
 def connect(user1, action, user2):
-    
     pass
 
 def outta_my_face(user, face):
