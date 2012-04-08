@@ -1,11 +1,13 @@
 from nose.tools import *
+import cPickle as pickle
+
+from test_config import USER_DATA_FILE
 from imyface import user
 
 from imyface.data_layer import user_data, face_data
 
-import cPickle as pickle
 
-USER_DATA_FILE = 'demo_data/data1_faces__small-no-cycles.dat.pickle'
+
 
 USERS_LOADED = 0
 FIRST_ROW = None
