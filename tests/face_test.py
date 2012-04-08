@@ -10,10 +10,11 @@ from imyface.data_layer import user_data, face_data
 _USER_DATA = user_data.USER_DATA
 _FACE_DATA = face_data.FACE_DATA
 
-CONNECTIONS_LOADED = 0 
+CONNECTIONS_LOADED = 0
+FIRST_ROW = None
 
 #@with_setup(setup=user_test.setup,teardown=user_test.tear_down)
-def setup():
+def _setup():
     global CONNECTIONS_LOADED
     global FIRST_ROW
 
@@ -31,8 +32,13 @@ def setup():
 
     FIRST_ROW = connections_list[0]
 
-    return (connections_loaded, first_row)
+def _teardown():
+    global CONNECTIONS_LOADED
+    global FIRST_ROW
+    CONNECTIONS_LOADED = 0 
+    FIRST_ROW = None
+    user_test.tear_down()
 
-#@with_setup(setup=user_test.setup,teardown=user_test.tear_down)
+@with_setup(setup=_setup,teardown=_teardown)
 def test_connection():
     assert_true(True)

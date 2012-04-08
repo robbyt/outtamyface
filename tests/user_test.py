@@ -24,7 +24,9 @@ def setup():
 
 def tear_down():
     global USERS_LOADED
+    global FIRST_ROW
     USERS_LOADED = 0
+    FIRST_ROW = None
     user._USER_DATA = {}
 
 def test_enroll_load():

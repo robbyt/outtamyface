@@ -9,13 +9,13 @@ def connect(user1, action, user2):
     """
 
     # create an empty branch, or retrieve the existing
-    u1_tree = _FACE_DATA[user1].setdefault(action)
+    u1_tree = _FACE_DATA[user1].setdefault(action, {})
 
     # do the same for u2
-    u2_tree = _FACE_DATA[user2].setdefault(action)
+    u2_tree = _FACE_DATA[user2].setdefault(action, {})
 
     if u2_tree is None:
-        _FACE_DATA[user1][action][user2] = None
+        _FACE_DATA[user1][action][user2] = {}
     else:
         _FACE_DATA[user1][action][user2] = _FACE_DATA[user2][action]
         
