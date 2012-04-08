@@ -59,4 +59,31 @@ def test_is_existing():
     assert_true(user.is_existing_user('jsmith'))
     tear_down()
 
+def test_dupe_names():
+    u1 = {'first_name':'John',
+          'last_name':'Smith',
+          'user_id':'jsmith',
+          'password':'pass'}
+
+    u2 = {'first_name':'John',
+          'last_name':'Smith',
+          'user_id':'jsmith1',
+          'password':'pass'}
+
+    user.enroll(**u1)
+    user.enroll(**u2)
+
+    u1_fn = user.get_user(u1['user_id'])[0]
+    u1_ln = user.get_user(u1['user_id'])[1]
+    u1_pw = user.get_user(u1['user_id'])[2]
+
+    u2_fn = user.get_user(u2['user_id'])[0]
+    u2_ln = user.get_user(u2['user_id'])[1]
+    u2_pw = user.get_user(u2['user_id'])[2]
+
+    assert_equal(u1_fn, u2_fn)
+    assert_equal(u1_ln, u2_ln)
+    assert_equal(u1_pw, u2_pw)
+
+
 
