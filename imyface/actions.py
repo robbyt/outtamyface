@@ -1,23 +1,26 @@
 #import hashlib
-from data_layer import user_data, face_data
 
-_USER_DATA = user_data.USER_DATA
-_FACE_DATA = face_data.FACE_DATA
+#from data_layer.user_data import USER_DATA as _USER_DATA
+from data_layer.face_data import FACE_DATA as _FACE_DATA
+
+
+def init_user(user_id):
+    _FACE_DATA.setdefault((user_id,), {})
 
 def connect(user1, action, user2):
     """
     """
 
     # create an empty branch, or retrieve the existing
-    u1_tree = _FACE_DATA[user1].setdefault(action, {})
+    u1_tree = _FACE_DATA[(user1,)].setdefault((action,), {})
 
     # do the same for u2
-    u2_tree = _FACE_DATA[user2].setdefault(action, {})
+    u2_tree = _FACE_DATA[(user2,)].setdefault((action,), {})
 
     if u2_tree is None:
-        _FACE_DATA[user1][action][user2] = {}
+        _FACE_DATA[(user1,)][(action,)][(user2,)] = {}
     else:
-        _FACE_DATA[user1][action][user2] = _FACE_DATA[user2][action]
+        _FACE_DATA[(user1,)][(action,)][(user2,)] = _FACE_DATA[(user2,)][(action,)]
         
 
 
@@ -32,15 +35,20 @@ def outta_my_face(user, face):
         analogous to asking the Face to "permanent retweet" user's posts, 
         and additionally broadcasting your posts to everyone who also accepts
 
-        me == outta request ==> tom
-        < tom accepts>
-        me == connected ==> tom
-        me == outta request ==> [tom's contacts: 'larry', 'billy']
-        me == outta request ==> larry ==> [larry's contacts] 
-        me == outta request ==> billy ...
+        me == outta ==> tom
+        me == outta ==> [tom's contacts: 'larry', 'billy']
+
+        when user sends an outta_my_Face to a face1,
+        and a user posts to user's page,
+        then posts will be sent to the face1 page also.
+
+        additionally, all faces that are outta on face1 will receive posts
+        from user.
+
+
 
     """
-    _connect(user, 'OuttaMyFace', face)
+    connect(user, 'OuttaMyFace', face)
 
 def in_my_face():
     """ the user asks another member to be "in my face", ie, have updates from
