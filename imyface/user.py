@@ -55,3 +55,9 @@ def get_user(user_id):
 def get_user_count():
     return len(_USER_DATA)
 
+def enroll_list(users_list):
+    """ Enroll all users in a list
+    """
+    for r in users_list:
+        enroll(r[0], r[1], r[2], r[3])
+
