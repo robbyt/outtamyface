@@ -24,7 +24,6 @@ def connect(user1, action, user2):
     else:
         _FACE_DATA[(user1,)][(action,)][(user2,)] = _FACE_DATA[(user2,)][(action,)]
         
-
 def get_face_data(user_id):
     try:
         return _FACE_DATA[(user_id,)]
@@ -52,9 +51,6 @@ def outta_my_face(user, face):
 
         additionally, all faces that are outta on face1 will receive posts
         from user.
-
-
-
     """
     connect(user, 'OuttaMyFace', face)
 
@@ -78,7 +74,6 @@ def faced_up(user, face):
 
         user = user that is testing 
         face = target face, that we are testing membership for
-
     """
     pass
 
@@ -88,4 +83,11 @@ def face_space(user_a, user_b):
         ie, who sees posts from both users_a and users_b
     """
     pass
+
+
+def connect_list(users_list):
+    """ Enroll all users in a list
+    """
+    for r in users_list:
+        connect(r[0], r[1], r[2])
 
