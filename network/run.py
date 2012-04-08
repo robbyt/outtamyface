@@ -6,55 +6,40 @@ logging.debug("Setup logging")
 
 from miniboa import TelnetServer
 
-IDLE_TIMEOUT = 600
-logging.debug("Timeout set to: %s" % (IDLE_TIMEOUT))
+from . import state
 
 PRODUCT_NAME = "iMyFace"
-CLIENT_LIST = []
-CLIENT_STATE = {}
 AUTH_DB = {}
 
 SERVER_RUN = True
 AUTH_RETRY = 2
+
 
 def on_connect(client):
     """ handler for new connections
     """
     logging.info("Opened connection to %s" % client.addrport() )
 
-    CLIENT_LIST.append(client)
-    CLIENT_STATE[client] = {}
+    state.set_client_list(client)
+    state.initialize_client_state(client)
     client.send("")
     client.send("Welcome to the %s Server, %s.\n" % (PRODUCT_NAME, client.addrport()) )
     client.send("Enter your user_id, or type \"enroll\" to create a new account: ")
-
 
 def on_disconnect(client):
     """ lost, or disconnected clients
     """
     logging.info("Lost connection to %s" % client.addrport() )
-    CLIENT_LIST.remove(client)
-    del(CLIENT_STATE[client])
+    state.prune_client_state(client)
+    state.prune_client_list(client)
     #broadcast('%s leaves the conversation.\n' % client.addrport() )
-
-
-def kick_idle():
-    """
-    Looks for idle clients and disconnects them by setting active to False.
-    """
-    ## Who hasn't been typing?
-    for client in CLIENT_LIST:
-        if client.idle() > IDLE_TIMEOUT:
-            logging.info('Kicking idle client %s' % client.addrport())
-            client.active = False
-
 
 def process_clients():
     """
     Check each client, if client.cmd_ready == True then there is a line of
     input available via client.get_command().
     """
-    for client in CLIENT_LIST:
+    for client in state.CLIENT_LIST:
         if client.active and client.cmd_ready:
             logging.debug("Found a message, processing...")
             msg_processor(client)
@@ -291,17 +276,14 @@ def msg_processor(client):
     msg = client.get_command()
     logging.debug('%s says, "%s"' % (client.addrport(), msg))
 
-    print CLIENT_STATE
-
     if msg == "":
         return
 
     if msg == 'debug':
-        print CLIENT_STATE
-        print AUTH_DB
-        print CLIENT_LIST
+        logging.debug(str(state.CLIENT_STATE))
+        logging.debug(str(AUTH_DB))
+        logging.debug(str(state.CLIENT_LIST))
         return
-
 
     if not CLIENT_STATE[client].has_key('auth_retry'):
         CLIENT_STATE[client]['auth_retry'] = 0
@@ -350,7 +332,7 @@ if __name__ == '__main__':
     ## Server Loop
     while SERVER_RUN:
         telnet_server.poll()        ## Send, Recv, and look for new connections
-        kick_idle()                 ## Check for idle clients
+        state.kick_idle()                 ## Check for idle clients
         process_clients()           ## Check for client input
         sleep(0.1)
 

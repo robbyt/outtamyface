@@ -12,7 +12,7 @@
 #   under the License.
 #------------------------------------------------------------------------------
 
-from miniboa.async import TelnetServer
+#from miniboa.async import TelnetServer
 
 
 

@@ -48,7 +48,7 @@ def get_client_list(client=None):
         logging.debug("Reading client list data for " + str(client))
         return CLIENT_LIST[client]
 
-## Client state private functions
+## client_state private functions
 def _set_client_state(client, key, value):
     """ Private function for setting client state
     """
@@ -62,7 +62,7 @@ def _get_client_state(client, key):
     """
     return CLIENT_STATE[client].get(key, None)
 
-## client_State public functions 
+## client_state public functions 
 def initialize_client_state(client):
     """ Used when a new client logs in, to setup a new root key, and reset
         any old state data that might be hanging around. 
@@ -79,19 +79,25 @@ def prune_client_state(client):
     except KeyError:
         logging.warn("Failed to remove client state, client already pruned.")
 
-## related to the auth_state in client_state
-def set_auth_state(client, auth_state):
+## related to the client's <application>_state for various internal 'apps'
+def set_state(client, application, state):
     """ Used for updating the client's state. This is a very commonly used
         function in this application, since the user's state controls their
         location in the program.
     """
-    _set_client_state(client, 'auth_state', auth_state)
+    logging.debug("Setting %s_state for %s" % (application, str(client)))
+    _set_client_state(client, application + '_state', state)
 
-def get_auth_state(client):
+def get_state(client, application):
     """ Lookup and return the client's state. This is very common, since
         the state controls the user's location within the program.
     """
-    logging.debug("Looking up auth_state for " + str(client))
-    return _get_client_state(client, 'auth_state')
+    logging.debug("Looking up %s_state for %s" % (application, str(client)))
+    return _get_client_state(client,  application + '_state')
 
+def get_user_id(client):
+    return get_state(client, 'user_id')
+
+def get_auth_state(client):
+    return get_state(client, 'auth')
 
