@@ -5,7 +5,21 @@ _USER_DATA = user_data.USER_DATA
 _FACE_DATA = face_data.FACE_DATA
 
 def connect(user1, action, user2):
-    pass
+    """
+    """
+
+    # create an empty branch, or retrieve the existing
+    u1_tree = _FACE_DATA[user1].setdefault(action)
+
+    # do the same for u2
+    u2_tree = _FACE_DATA[user2].setdefault(action)
+
+    if u2_tree is None:
+        _FACE_DATA[user1][action][user2] = None
+    else:
+        _FACE_DATA[user1][action][user2] = _FACE_DATA[user2][action]
+        
+
 
 def outta_my_face(user, face):
     """ when a user asks another member ('the face') to be "outta my face"
