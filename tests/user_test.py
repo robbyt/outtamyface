@@ -50,16 +50,22 @@ def test_enroll_one():
     assert_equal(u, (fn, ln, pw))
 
 def test_no_dupes():
-    """ Make sure that redundant users cannot be enrolled
+    """ Make sure that dupe users cannot be enrolled
     """
     with assert_raises(user.UserExists):
         user.enroll('John', 'Smith', 'jsmith', 'pass')
 
 def test_is_existing():
+    """ the jsmith user should still exist, even though we tried to create a
+        duplicate user in the last test.
+    """
     assert_true(user.is_existing_user('jsmith'))
     tear_down()
 
 def test_dupe_names():
+    """ User accounts should allow duplicate info for everything other than 
+        the user_id.
+    """
     u1 = {'first_name':'John',
           'last_name':'Smith',
           'user_id':'jsmith',
