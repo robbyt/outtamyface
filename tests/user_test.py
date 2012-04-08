@@ -49,6 +49,12 @@ def test_enroll_one():
     u = user.get_user(uid)
     assert_equal(u, (fn, ln, pw))
 
+def test_no_dupes():
+    """ Make sure that redundant users cannot be enrolled
+    """
+    with assert_raises(user.UserExists):
+        user.enroll('John', 'Smith', 'jsmith', 'pass')
+
 def test_is_existing():
     assert_true(user.is_existing_user('jsmith'))
     tear_down()
