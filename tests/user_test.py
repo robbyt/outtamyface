@@ -23,6 +23,8 @@ def setup():
     FIRST_ROW = user_list[0]
 
 def tear_down():
+    global USERS_LOADED
+    USERS_LOADED = 0
     user._USER_DATA = {}
 
 def test_enroll_load():
