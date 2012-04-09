@@ -11,9 +11,6 @@ class UserExists(Exception):
     pass
 
 ## private functions
-def _get_user(user_id):
-    return _USER_DATA.get((user_id,))['data']
-
 def _new_user(last_name,
               first_name,
               user_id,
@@ -52,8 +49,11 @@ def enroll(first_name,
     else:
         raise UserExists("Found existing user %s in db" % (user_id))
 
+def user_enabled(user_id):
+    return _USER_DATA.get((user_id,))['enabled']
+
 def get_user(user_id):
-    return _get_user(user_id)
+    return _USER_DATA.get((user_id,))['data']
 
 def get_user_count():
     return len(_USER_DATA)
