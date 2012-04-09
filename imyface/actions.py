@@ -88,8 +88,33 @@ def faced_up(user, face):
 
         user = user that is testing 
         face = target face, that we are testing membership for
+
+        - Whether the Face is currently a community member
+
+        - Whether the Face is InMyFace with respect to the user. So for 
+          example, if B is "OuttaMyFace" with respect to A, and C is 
+          "Outta" B, then updates to A will automatically be posted on B, 
+          and then automatically posted on C.
+
+        - The sequence(s) of Faces through which the user's posts will reach
+          the Face?
+
+        - Whether the Face is InYourFace with respect to the user.
+
+        - The sequence(s) of Faces through which the Face's posts will reach
+          the user.
+
     """
-    pass
+    d = {'face_enabled': user.user_enabled(face),
+         'face_InMyFace': None,
+         'path_to_user_from_face': None,
+         'user_InMyFace': None,
+         'path_to_face_from_user':None
+        }
+    try:
+        return d
+    except:
+        return False
 
 def face_space(user_a, user_b):
     """ with which members are both user_a and user_b indirectly connected?
