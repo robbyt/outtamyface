@@ -16,10 +16,8 @@ def setup():
 
     fp = open(USER_DATA_FILE, 'rb')
     user_list = pickle.load(fp)
-    for u in user_list:
-        user.enroll(u[0], u[1], u[2], u[3])
-        USERS_LOADED += 1
 
+    USERS_LOADED = user.enroll_list(user_list)
     FIRST_ROW = user_list[0]
 
 def tear_down():

@@ -67,6 +67,10 @@ def get_user_count():
 def enroll_list(users_list):
     """ Enroll all users in a list
     """
+    users_loaded = 0
     for r in users_list:
         enroll(r[0], r[1], r[2], r[3])
+        users_loaded += 1
+    return users_loaded
+
 
