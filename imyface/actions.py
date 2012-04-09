@@ -128,6 +128,28 @@ def connect_list(users_list):
 
     return connections_loaded
 
-def is_outta(user, face):
-    pass
+def is_outta(user_id, face):
+    levels = 0
+    path = []
+
+    def face_finder():
+        pass
+
+    try:
+        if _FACE_DATA[(user_id,)][('OuttaMyFace',)].has_key((face,)):
+            # simple relationship, if only more relationships were so simple
+            return True
+
+        else:
+            for i in _FACE_DATA[(user_id,)][('OuttaMyFace',)].iteritems():
+                #TBD
+                assert(False)
+                i
+                levels += 1
+            
+    except KeyError:
+            logging.warn("Problem finding outta status for: {0} / {1}".format(user_id, face))
+            return False
+
+
 
