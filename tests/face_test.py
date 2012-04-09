@@ -27,9 +27,7 @@ def _setup():
 
     fp = open(FACE_DATA_FILE, 'rb')
     connections_list = pickle.load(fp)
-    for u in connections_list:
-        actions.connect(u[0], u[1], u[2])
-        CONNECTIONS_LOADED += 1
+    CONNECTIONS_LOADED = actions.connect_list(connections_list)
 
     FIRST_ROW = connections_list[0]
     return
@@ -43,5 +41,6 @@ def _teardown():
 
 @with_setup(setup=_setup,teardown=_teardown)
 def test_connection():
-    assert_true(True)
+#    action.connect(
+    pass
 

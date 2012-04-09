@@ -125,6 +125,10 @@ def face_space(user_a, user_b):
 def connect_list(users_list):
     """ Enroll all users in a list
     """
+    connections_loaded = 0
     for r in users_list:
         connect(r[0], r[1], r[2])
+        connections_loaded += 1
+
+    return connections_loaded
 
