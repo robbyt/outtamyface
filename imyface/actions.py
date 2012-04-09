@@ -31,17 +31,13 @@ def disconnect(user1, action, user2):
         logging.warn("Problem in {1} tree, cannot remove {1} / {2}".format(user1, action, user2))
         return False
 
-def get_face_data(user_id, action=None,):
-    if action is None:
-        try:
+def get_face_data(user_id, action=None):
+    try:
+        if action is None:
             return _FACE_DATA[(user_id,)]
-        except KeyError:
-            logging.warn("Problem finding face_data for: " + user_id)
-            return False
-    else:
-        try:
+        else:
             return _FACE_DATA[(user_id,)][(action,)]
-        except KeyError:
+    except KeyError:
             logging.warn("Problem finding face_data for: {0} / {1}".format(user_id, action))
             return False
 
@@ -131,4 +127,7 @@ def connect_list(users_list):
         connections_loaded += 1
 
     return connections_loaded
+
+def is_outta(user, face):
+    pass
 
