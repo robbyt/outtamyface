@@ -43,9 +43,19 @@ def _teardown():
     user_test.tear_down()
 
 @with_setup(setup=_setup,teardown=_teardown)
-def test_simple_connection():
+def test_direct_connection():
     uid1 = ROWS[0][2]
     uid2 = ROWS[1][2]
     actions.outta_my_face(uid1, uid2)
     assert_true(actions.is_outta(uid1, uid2))
+
+@with_setup(setup=_setup,teardown=_teardown)
+def test_second_connection():
+    uid1 = ROWS[0][2]
+    uid2 = ROWS[1][2]
+    uid3 = ROWS[2][2]
+    actions.outta_my_face(uid1, uid2)
+    actions.outta_my_face(uid2, uid3)
+
+    assert_true(actions.is_outta(uid1, uid3))
 
