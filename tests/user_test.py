@@ -51,6 +51,7 @@ def test_enroll_one():
     uid = 'jsmith'
     pw = 'pass'
 
+    tear_down()
     user.enroll(fn, ln, uid, pw)
     u = user.get_user(uid)
     assert_equal(u, (fn, ln, pw))

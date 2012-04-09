@@ -23,13 +23,27 @@ def connect(user1, action, user2):
         _FACE_DATA[(user1,)][(action,)][(user2,)] = {}
     else:
         _FACE_DATA[(user1,)][(action,)][(user2,)] = _FACE_DATA[(user2,)][(action,)]
-        
-def get_face_data(user_id):
+
+def disconnect(user1, action, user2):
     try:
-        return _FACE_DATA[(user_id,)]
+        del(_FACE_DATA[(user1,)][(action,)][(user2,)])
     except KeyError:
-        logging.warn("Problem finding face_data for: " + user_id)
+        logging.warn("Problem in {1} tree, cannot remove {1} / {2}".format(user1, action, user2))
         return False
+
+def get_face_data(user_id, action=None,):
+    if action is None:
+        try:
+            return _FACE_DATA[(user_id,)]
+        except KeyError:
+            logging.warn("Problem finding face_data for: " + user_id)
+            return False
+    else:
+        try:
+            return _FACE_DATA[(user_id,)][(action,)]
+        except KeyError:
+            logging.warn("Problem finding face_data for: {0} / {1}".format(user_id, action))
+            return False
 
 def outta_my_face(user, face):
     """ when a user asks another member ('the face') to be "outta my face"
@@ -54,7 +68,7 @@ def outta_my_face(user, face):
     """
     connect(user, 'OuttaMyFace', face)
 
-def in_my_face():
+def in_my_face(user, face):
     """ the user asks another member to be "in my face", ie, have updates from
         the Face's page sent to the user's page. Thsi works like an outta, but
         in reverse.
@@ -66,7 +80,7 @@ def in_my_face():
         < tom accepts >
         tom == outta request ==> [my contacts]
     """
-    pass
+    connect(user, 'InMyFace', face)
 
 def faced_up(user, face):
     """ Test to see if a face is connected. will posts to the user's page be
@@ -77,13 +91,11 @@ def faced_up(user, face):
     """
     pass
 
-
 def face_space(user_a, user_b):
     """ with which members are both user_a and user_b indirectly connected?
         ie, who sees posts from both users_a and users_b
     """
     pass
-
 
 def connect_list(users_list):
     """ Enroll all users in a list

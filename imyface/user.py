@@ -12,7 +12,7 @@ class UserExists(Exception):
 
 ## private functions
 def _get_user(user_id):
-    return _USER_DATA.get((user_id,))
+    return _USER_DATA.get((user_id,))['data']
 
 def _new_user(last_name,
               first_name,
@@ -23,7 +23,9 @@ def _new_user(last_name,
         Each member of the dict must be unique, as identified by the key.
     """
     # add new row to user_data db
-    _USER_DATA[(user_id,)] = (first_name, last_name, password)
+    _USER_DATA[(user_id,)] = {'data': (first_name, last_name, password), 
+                              'enabled': True}
+
 #    logging.debug("Added new user %s to user_data" % (user_id))
 
     # create an empty node in the face_data db
