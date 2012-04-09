@@ -61,6 +61,13 @@ def test_empty_face_data(uid='jsmith'):
     """
     assert_equal(actions.get_face_data(uid), {})
 
+def test_user_enabled(uid='jsmith'):
+    assert_true(user.user_enabled(uid))
+    user.disable_user(uid)
+    assert_false(user.user_enabled(uid))
+    user.enable_user(uid)
+    assert_true(user.user_enabled(uid))
+
 def test_no_dupes():
     """ Make sure that dupe users cannot be enrolled
     """

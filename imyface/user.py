@@ -52,6 +52,12 @@ def enroll(first_name,
 def user_enabled(user_id):
     return _USER_DATA.get((user_id,))['enabled']
 
+def disable_user(user_id):
+    _USER_DATA.get((user_id,))['enabled'] = False
+
+def enable_user(user_id):
+    _USER_DATA.get((user_id,))['enabled'] = True
+
 def get_user(user_id):
     return _USER_DATA.get((user_id,))['data']
 
