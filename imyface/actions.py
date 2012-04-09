@@ -128,18 +128,17 @@ def connect_list(users_list):
 
     return connections_loaded
 
-def is_outta(user_id, face):
+def is_outta(user_id, face, action='OuttaMyFace'):
     levels = 0
     path = []
 
-    def face_finder():
-        pass
+    
+    def face_finder(u, f):
+        return _FACE_DATA[(u,)][('OuttaMyFace',)].has_key((f,))
 
     try:
-        if _FACE_DATA[(user_id,)][('OuttaMyFace',)].has_key((face,)):
-            # simple relationship, if only more relationships were so simple
+        if face_finder(user_id, face):
             return True
-
         else:
             for i in _FACE_DATA[(user_id,)][('OuttaMyFace',)].iteritems():
                 #TBD
