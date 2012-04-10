@@ -6,6 +6,9 @@ logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 #from data_layer.user_data import USER_DATA as _USER_DATA
 from data_layer.face_data import FACE_DATA as _FACE_DATA
 
+class ConnectionProblem(Exception):
+    pass
+
 ## private functions
 def _get_child_keys(user_id, action='OuttaMyFace'):
     """ returns a list of keys
@@ -19,28 +22,28 @@ def _get_child_keys(user_id, action='OuttaMyFace'):
     except KeyError:
         return
 
-def _child_keys_gennerator(user_id, action='OuttaMyFace'):
-    """ returns a list of keys
-    """
-    try:
-        d = _FACE_DATA[(user_id,)][(action,)].keys()
-        for k in d:
-            yield k
+#def _child_keys_gennerator(user_id, action='OuttaMyFace'):
+#    """ returns a list of keys
+#    """
+#    try:
+#        d = _FACE_DATA[(user_id,)][(action,)].keys()
+#        for k in d:
+#            yield k
 #        if d:
 #            return d
 #        else:
 #            return 'STOP'
-    except KeyError:
-        return
+#    except KeyError:
+#        return
 
 
 
 ## public functions
 def init_user(user_id):
-    _FACE_DATA.setdefault((user_id,), {})
+    return _FACE_DATA.setdefault((user_id,), {})
 
 def connect(user1, action, user2):
-    """
+    """ docs
     """
 
     # create an empty branch, or retrieve the existing
@@ -49,10 +52,14 @@ def connect(user1, action, user2):
     # do the same for u2
     u2_tree = _FACE_DATA[(user2,)].setdefault((action,), {})
 
-    if u2_tree is None:
-        _FACE_DATA[(user1,)][(action,)][(user2,)] = {}
-    else:
-        _FACE_DATA[(user1,)][(action,)][(user2,)] = _FACE_DATA[(user2,)][(action,)]
+    try:
+        if u2_tree is None:
+            _FACE_DATA[(user1,)][(action,)][(user2,)] = {}
+        else:
+            _FACE_DATA[(user1,)][(action,)][(user2,)] = _FACE_DATA[(user2,)][(action,)]
+    except KeyError:
+        raise ConnectionProblem
+#        logging.error("Problem adding connection")
 
 def disconnect(user1, action, user2):
     try:
