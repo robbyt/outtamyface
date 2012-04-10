@@ -5,7 +5,15 @@ logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 #from data_layer.user_data import USER_DATA as _USER_DATA
 from data_layer.face_data import FACE_DATA as _FACE_DATA
 
+## private functions
+def _get_child_keys(user_id, action='OuttaMyFace'):
+    try:
+        return _FACE_DATA[(user_id,)][(action,)].keys()
+    except KeyError:
+        return
 
+
+## public functions
 def init_user(user_id):
     _FACE_DATA.setdefault((user_id,), {})
 
@@ -128,10 +136,23 @@ def connect_list(users_list):
 
     return connections_loaded
 
+def connection_gennerator(user_id, limit=10, action='OuttaMyFace'):
+    level = 0
+    branch_data = {}
+
+    if level is 0:
+        branch_data[0] = _get_child_keys(user_id)
+        yield branch_data[0]
+    elif level <= limit:
+        parent_level = level
+        child_level = level + 1
+        branch_data[child_level] = [_get_child_keys(f[0]) for f in branch_data[parent_level]]
+        level +=1
+        yield branch_data[child_level]
+
 def is_outta(user_id, face, action='OuttaMyFace'):
     levels = 0
     path = []
-
     
     def face_finder(u, f):
         return _FACE_DATA[(u,)][('OuttaMyFace',)].has_key((f,))
