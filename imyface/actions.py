@@ -1,4 +1,5 @@
 #import hashlib
+import itertools
 import logging
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 
@@ -10,9 +11,28 @@ def _get_child_keys(user_id, action='OuttaMyFace'):
     """ returns a list of keys
     """
     try:
-        return _FACE_DATA[(user_id,)][(action,)].keys()
+        d = _FACE_DATA[(user_id,)][(action,)].keys()
+        if d:
+            return d
+        else:
+            return ['']
     except KeyError:
         return
+
+def _child_keys_gennerator(user_id, action='OuttaMyFace'):
+    """ returns a list of keys
+    """
+    try:
+        d = _FACE_DATA[(user_id,)][(action,)].keys()
+        for k in d:
+            yield k
+#        if d:
+#            return d
+#        else:
+#            return 'STOP'
+    except KeyError:
+        return
+
 
 
 ## public functions
@@ -147,13 +167,22 @@ def connection_gennerator(user_id, limit=10, action='OuttaMyFace'):
 
     while level <= limit:
         parent_level = level
+        logging.debug("Parent level: " + str(parent_level))
         child_level = level + 1
+        logging.debug("Child level: " + str(child_level))
 #        branch_data[child_level] = []
 #        for f in branch_data[parent_level]:
 #            branch_data[child_level].append(_get_child_keys(f[0]))
-        branch_data[child_level] = sum([_get_child_keys(f[0]) for f in branch_data[parent_level]])
+        l = [_get_child_keys(f[0]) for f in branch_data[parent_level] if f is not ""]
+#        logging.debug("List from listcomp: " + str(l))
+        l_flat = sum(l, [])
+#        logging.debug("List of l_flat: " + str(l_flat))
+        branch_data[child_level] = l_flat
         level +=1
-        yield (level, branch_data[child_level])
+        if branch_data[child_level] == ['']:
+            break
+        else:
+            yield (level, branch_data[child_level])
 
 def is_outta(user_id, face, action='OuttaMyFace'):
     levels = 0
