@@ -7,6 +7,8 @@ from data_layer.face_data import FACE_DATA as _FACE_DATA
 
 ## private functions
 def _get_child_keys(user_id, action='OuttaMyFace'):
+    """ returns a list of keys
+    """
     try:
         return _FACE_DATA[(user_id,)][(action,)].keys()
     except KeyError:
@@ -140,15 +142,18 @@ def connection_gennerator(user_id, limit=10, action='OuttaMyFace'):
     level = 0
     branch_data = {}
 
-    if level is 0:
-        branch_data[0] = _get_child_keys(user_id)
-        yield branch_data[0]
-    elif level <= limit:
+    branch_data[0] = _get_child_keys(user_id)
+    yield (level, branch_data[0])
+
+    while level <= limit:
         parent_level = level
         child_level = level + 1
-        branch_data[child_level] = [_get_child_keys(f[0]) for f in branch_data[parent_level]]
+#        branch_data[child_level] = []
+#        for f in branch_data[parent_level]:
+#            branch_data[child_level].append(_get_child_keys(f[0]))
+        branch_data[child_level] = sum([_get_child_keys(f[0]) for f in branch_data[parent_level]])
         level +=1
-        yield branch_data[child_level]
+        yield (level, branch_data[child_level])
 
 def is_outta(user_id, face, action='OuttaMyFace'):
     levels = 0
