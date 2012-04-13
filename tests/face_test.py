@@ -84,9 +84,9 @@ def test_second_connection():
     user.enroll(uid7,uid7,uid7,uid7)
 
     actions.outta_my_face(uid6,uid7)
+    assert_true(actions.is_outta(uid6, uid7))
+    assert_false(actions.is_outta(uid7, uid6))
 
     assert_false(actions.is_outta(uid1, uid6))
     assert_false(actions.is_outta(uid1, uid7))
-    assert_true(actions.is_outta(uid6, uid7))
-    #assert_false(actions.is_outta(uid6, uid7))
 
