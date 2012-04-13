@@ -26,8 +26,8 @@ def _get_child_keys(user_id, action='OuttaMyFace'):
     except KeyError:
         return
 
-def _child_keys_gennerator(user_id, action='OuttaMyFace'):
-    """ return keys as gennerator
+def _child_keys_generator(user_id, action='OuttaMyFace'):
+    """ user_id keys as generator
     """
 #    visited = []
     try:
@@ -35,7 +35,6 @@ def _child_keys_gennerator(user_id, action='OuttaMyFace'):
         if type(user_id) is str:
             connections = _FACE_DATA[(user_id,)][(action,)].keys()
             for row in set(connections):
-                logging.debug("_ckg yields: " + str(row))
                 yield row
 
         elif type(user_id) is list:
@@ -44,11 +43,9 @@ def _child_keys_gennerator(user_id, action='OuttaMyFace'):
                 for k in set(connections):
                     yield k
 
-
     except KeyError:
         logging.error("Key not found in _ckg: " + str(user_id))
         return
-
 
 
 ## public functions
@@ -170,6 +167,7 @@ def face_space(user_a, user_b):
 
 def connect_list(users_list):
     """ Enroll all users in a list
+        O(n)
     """
     connections_loaded = 0
     for r in users_list:
@@ -178,57 +176,22 @@ def connect_list(users_list):
 
     return connections_loaded
 
-def connection_gennerator(user_id, limit=10, action='OuttaMyFace'):
-    """ Not sure if this is working correctly...
+def connection_generator(user_id, limit=10, action='OuttaMyFace'):
+    """ O(n)
     """
-    level = 0
-    branch_data = {}
-    visited = ["", ]
-
-    branch_data[0] = _get_child_keys(user_id)
-    yield (level, branch_data[0])
-
-    while level <= limit:
-        # capture the current level of the tree
-        parent_level = level
-        #logging.debug("Parent level: " + str(parent_level))
-
-        # increment the level, to track our child level
-        child_level = level + 1
-        #logging.debug("Child level: " + str(child_level))
-
-#        logging.debug("Visited: " + str(visited))
-        logging.debug("Visited num: " + str(len(visited) - 1))
-        # get a list of the keys, from all items in the parent level
-        l = [_get_child_keys(f[0]) for f in branch_data[parent_level] if f not in visited]
-
-        # flatten that list
-        l_flat = sum(l, [])
-
-        # add that list to the visited list
-        map(visited.append, l_flat)
-
-        # store the flattened list
-        branch_data[child_level] = l_flat
-
-        # since we've stored the flattened list, we are now at the child level
-        level +=1
-        if len(branch_data[child_level]) is 0:
-            break
-        else:
-            yield (level, branch_data[child_level])
-
-
-def connection_gen2(user_id, limit=10, action='OuttaMyFace'):
     level = 0
     branch_data = {}
     visited = []
 
-    branch_data[0] = {(user_id,):[child for child in _get_child_keys(user_id)]}
+    try:
+        branch_data[0] = {(user_id,):[child for child in _get_child_keys(user_id)]}
+    except TypeError:
+        logging.warn("Connection lookup for empty nodes")
+        return
 
     yield (action, level, branch_data[0],)
 
-    while level <= limit:
+    while level < limit:
         # capture the current level of the tree
         parent_level = level
 #        logging.debug("Parent level: " + str(parent_level))
@@ -272,25 +235,12 @@ def connection_gen2(user_id, limit=10, action='OuttaMyFace'):
 
 
 def is_outta(user_id, face, action='OuttaMyFace'):
-    levels = 0
-    path = []
-    
-    def face_finder(u, f):
-        return _FACE_DATA[(u,)][('OuttaMyFace',)].has_key((f,))
-
-    try:
-        if face_finder(user_id, face):
+    """ O(n^2)
+    """
+    for cons in connection_generator(user_id=user_id, action=action):
+        if (face, ) in cons[2].keys():
             return True
-        else:
-            for i in _FACE_DATA[(user_id,)][('OuttaMyFace',)].iteritems():
-                #TBD
-                assert(False)
-                i
-                levels += 1
-            
-    except KeyError:
-            logging.warn("Problem finding outta status for: {0} / {1}".format(user_id, face))
-            return False
+    return False
 
 
 
