@@ -57,16 +57,32 @@ def connect(user1, action, user2):
     """
 
     # create an empty branch, or retrieve the existing
-    u1_tree = _FACE_DATA[(user1,)].setdefault((action,), {})
-
+    u1_tree_out = _FACE_DATA[(user1,)].setdefault(('OuttaMyFace',), {})
+    u1_tree_in = _FACE_DATA[(user1,)].setdefault(('InMyFace',), {})
     # do the same for u2
-    u2_tree = _FACE_DATA[(user2,)].setdefault((action,), {})
+    u2_tree_out = _FACE_DATA[(user2,)].setdefault(('OuttaMyFace',), {})
+    u2_tree_in = _FACE_DATA[(user2,)].setdefault(('InMyFace',), {})
+
+    d = {'OuttaMyFace':{
+            'u1_tree': u1_tree_out,
+            'u2_tree': u1_tree_out},
+         'InMyFace':{
+            'u1_tree': u1_tree_in,
+            'u2_tree': u1_tree_in},
+        }
+
 
     try:
-        if u2_tree is None:
+        if d[action]['u2_tree'] is None:
+
+            # if none, then that means u2_tree is empty, so do init
             _FACE_DATA[(user1,)][(action,)][(user2,)] = {}
+
         else:
+
+            # else, u2_tree has some data, so update it with a new key
             _FACE_DATA[(user1,)][(action,)][(user2,)] = _FACE_DATA[(user2,)][(action,)]
+
     except KeyError:
         raise ConnectionProblem
 #        logging.error("Problem adding connection")
