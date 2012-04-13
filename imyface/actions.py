@@ -1,40 +1,53 @@
-#import hashlib
-import itertools
 import logging
+from collections import deque
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 
-#from data_layer.user_data import USER_DATA as _USER_DATA
 from data_layer.face_data import FACE_DATA as _FACE_DATA
+
 
 class ConnectionProblem(Exception):
     pass
+
 
 ## private functions
 def _get_child_keys(user_id, action='OuttaMyFace'):
     """ returns a list of keys
     """
+    if type(user_id) is tuple:
+        user_id = user_id[0]
+
     try:
         d = _FACE_DATA[(user_id,)][(action,)].keys()
         if d:
             return d
         else:
+#            assert(False)
             return ['']
     except KeyError:
         return
 
-#def _child_keys_gennerator(user_id, action='OuttaMyFace'):
-#    """ returns a list of keys
-#    """
-#    try:
-#        d = _FACE_DATA[(user_id,)][(action,)].keys()
-#        for k in d:
-#            yield k
-#        if d:
-#            return d
-#        else:
-#            return 'STOP'
-#    except KeyError:
-#        return
+def _child_keys_gennerator(user_id, action='OuttaMyFace'):
+    """ return keys as gennerator
+    """
+#    visited = []
+    try:
+
+        if type(user_id) is str:
+            connections = _FACE_DATA[(user_id,)][(action,)].keys()
+            for row in set(connections):
+                logging.debug("_ckg yields: " + str(row))
+                yield row
+
+        elif type(user_id) is list:
+            for row in user_id:
+                connections = _FACE_DATA[(row,)][(action,)].keys()
+                for k in set(connections):
+                    yield k
+
+
+    except KeyError:
+        logging.error("Key not found in _ckg: " + str(user_id))
+        return
 
 
 
@@ -166,30 +179,97 @@ def connect_list(users_list):
     return connections_loaded
 
 def connection_gennerator(user_id, limit=10, action='OuttaMyFace'):
+    """ Not sure if this is working correctly...
+    """
     level = 0
     branch_data = {}
+    visited = ["", ]
 
     branch_data[0] = _get_child_keys(user_id)
     yield (level, branch_data[0])
 
     while level <= limit:
+        # capture the current level of the tree
         parent_level = level
-        logging.debug("Parent level: " + str(parent_level))
+        #logging.debug("Parent level: " + str(parent_level))
+
+        # increment the level, to track our child level
         child_level = level + 1
-        logging.debug("Child level: " + str(child_level))
-#        branch_data[child_level] = []
-#        for f in branch_data[parent_level]:
-#            branch_data[child_level].append(_get_child_keys(f[0]))
-        l = [_get_child_keys(f[0]) for f in branch_data[parent_level] if f is not ""]
-#        logging.debug("List from listcomp: " + str(l))
+        #logging.debug("Child level: " + str(child_level))
+
+#        logging.debug("Visited: " + str(visited))
+        logging.debug("Visited num: " + str(len(visited) - 1))
+        # get a list of the keys, from all items in the parent level
+        l = [_get_child_keys(f[0]) for f in branch_data[parent_level] if f not in visited]
+
+        # flatten that list
         l_flat = sum(l, [])
-#        logging.debug("List of l_flat: " + str(l_flat))
+
+        # add that list to the visited list
+        map(visited.append, l_flat)
+
+        # store the flattened list
         branch_data[child_level] = l_flat
+
+        # since we've stored the flattened list, we are now at the child level
         level +=1
-        if branch_data[child_level] == ['']:
+        if len(branch_data[child_level]) is 0:
             break
         else:
             yield (level, branch_data[child_level])
+
+
+def connection_gen2(user_id, limit=10, action='OuttaMyFace'):
+    level = 0
+    branch_data = {}
+    visited = []
+
+    branch_data[0] = {(user_id,):[child for child in _get_child_keys(user_id)]}
+
+    yield (action, level, branch_data[0],)
+
+    while level <= limit:
+        # capture the current level of the tree
+        parent_level = level
+#        logging.debug("Parent level: " + str(parent_level))
+
+        # increment the level, to track our child level
+        child_level = level + 1
+#        logging.debug("Child level: " + str(child_level))
+
+        # empty dict that will store our results for this level
+        child_list = {}
+
+        # for every parent in our previous branch level
+        for parent, child in branch_data[parent_level].iteritems():
+
+            for i in child:
+#                logging.debug("Lookup for: " + str(i) )
+                # create an empty list, use parent as key
+                child_list[i] = []
+
+                # then check to see if we've already visited this parent node
+                if i not in visited:
+                    
+                    # if we haven't, then find that parent's children
+                    try:
+                        for next_child in _get_child_keys(i):
+    
+                            # and add each child to the child_list results
+                            child_list[i].append(next_child)
+                    except TypeError:
+                        child_list[i].append(('',))
+
+                # finally, mark this parent as visited
+                visited.append(i)
+
+        branch_data[child_level] = child_list
+        level += 1
+        if len(branch_data[child_level]) is 0:
+            break
+        else:
+            yield (action, level, branch_data[child_level])
+
 
 def is_outta(user_id, face, action='OuttaMyFace'):
     levels = 0
