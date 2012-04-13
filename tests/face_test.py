@@ -5,6 +5,7 @@ from test_config import FACE_DATA_FILE
 import user_test
 
 from imyface import actions
+from imyface import user
 
 
 from imyface.data_layer import user_data, face_data
@@ -51,11 +52,41 @@ def test_direct_connection():
 
 @with_setup(setup=_setup,teardown=_teardown)
 def test_second_connection():
+    """ test connected, not connected users
+    """
+
+    # these users are connected to uid1
     uid1 = ROWS[0][2]
     uid2 = ROWS[1][2]
     uid3 = ROWS[2][2]
-    actions.outta_my_face(uid1, uid2)
-    actions.outta_my_face(uid2, uid3)
+    uid4 = ROWS[3][2]
 
+    assert_true(actions.is_outta(uid1, uid1))
+
+    actions.outta_my_face(uid1, uid2)
+    assert_true(actions.is_outta(uid1, uid2))
+
+    actions.outta_my_face(uid2, uid3)
+    assert_true(actions.is_outta(uid2, uid3))
     assert_true(actions.is_outta(uid1, uid3))
+
+    actions.outta_my_face(uid3, uid4)
+    assert_true(actions.is_outta(uid3, uid4))
+    assert_true(actions.is_outta(uid2, uid4))
+    assert_true(actions.is_outta(uid1, uid4))
+
+
+
+    # these users are not connected to uid1
+    uid6 = 'crap'
+    user.enroll(uid6,uid6,uid6,uid6)
+    uid7 = 'crap2'
+    user.enroll(uid7,uid7,uid7,uid7)
+
+    actions.outta_my_face(uid6,uid7)
+
+    assert_false(actions.is_outta(uid1, uid6))
+    assert_false(actions.is_outta(uid1, uid7))
+    assert_true(actions.is_outta(uid6, uid7))
+    #assert_false(actions.is_outta(uid6, uid7))
 

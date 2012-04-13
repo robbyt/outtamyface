@@ -239,7 +239,10 @@ def is_outta(user_id, face, action='OuttaMyFace'):
     """
     for cons in connection_generator(user_id=user_id, action=action):
         if (face, ) in cons[2].keys():
+            #logging.debug("Found %s in %s" % ((face), cons[2].keys()))
             return True
+        #else:
+            #logging.debug("Coult not find %s in %s" % (face, cons[2].keys()))
     return False
 
 
