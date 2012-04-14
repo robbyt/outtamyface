@@ -48,7 +48,7 @@ def test_direct_connection():
     uid1 = ROWS[0][2]
     uid2 = ROWS[1][2]
     actions.outta_my_face(uid1, uid2)
-    assert_true(actions.is_outta(uid1, uid2))
+    assert_true(actions.is_outta_my_face(uid1, uid2))
 
 @with_setup(setup=_setup,teardown=_teardown)
 def test_second_connection():
@@ -61,21 +61,24 @@ def test_second_connection():
     uid3 = ROWS[2][2]
     uid4 = ROWS[3][2]
 
-    assert_true(actions.is_outta(uid1, uid1))
+    assert_true(actions.is_outta_my_face(uid1, uid1))
 
     actions.outta_my_face(uid1, uid2)
-    assert_true(actions.is_outta(uid1, uid2))
+    assert_true(actions.is_outta_my_face(uid1, uid2))
 
     actions.outta_my_face(uid2, uid3)
-    assert_true(actions.is_outta(uid2, uid3))
-    assert_true(actions.is_outta(uid1, uid3))
+    assert_true(actions.is_outta_my_face(uid2, uid3))
+    assert_true(actions.is_outta_my_face(uid1, uid3))
 
     actions.outta_my_face(uid3, uid4)
-    assert_true(actions.is_outta(uid3, uid4))
-    assert_true(actions.is_outta(uid2, uid4))
-    assert_true(actions.is_outta(uid1, uid4))
+    assert_true(actions.is_outta_my_face(uid3, uid4))
+    assert_true(actions.is_outta_my_face(uid2, uid4))
+    assert_true(actions.is_outta_my_face(uid1, uid4))
 
 
+@with_setup(teardown=_teardown)
+def test_bi_direction():
+    uid1 = ROWS[0][2]
 
     # these users are not connected to uid1
     uid6 = 'crap'
@@ -84,9 +87,14 @@ def test_second_connection():
     user.enroll(uid7,uid7,uid7,uid7)
 
     actions.outta_my_face(uid6,uid7)
-    assert_true(actions.is_outta(uid6, uid7))
-    assert_false(actions.is_outta(uid7, uid6))
+    assert_true(actions.is_outta_my_face(uid6, uid7))
+    assert_true(actions.is_in_my_face(uid7, uid6))
 
-    assert_false(actions.is_outta(uid1, uid6))
-    assert_false(actions.is_outta(uid1, uid7))
+    # inverse test
+    assert_false(actions.is_outta_my_face(uid7, uid6))
+    assert_false(actions.is_in_my_face(uid6, uid7))
+
+    # finally, test to make sure these users aren't connected to uid1
+    assert_false(actions.is_outta_my_face(uid1, uid6))
+    assert_false(actions.is_outta_my_face(uid1, uid7))
 

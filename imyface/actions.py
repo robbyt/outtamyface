@@ -47,6 +47,19 @@ def _child_keys_generator(user_id, action='OuttaMyFace'):
         logging.error("Key not found in _ckg: " + str(user_id))
         return
 
+def _connection_tester(user_id, face):
+    """ test to see if a user is connected by checking each level of the tree
+        O(n^2)
+    """
+    for cons in connection_generator(user_id=user_id, action='OuttaMyFace'):
+        if (face, ) in cons[2].keys():
+            #logging.debug("Found %s in %s" % ((face), cons[2].keys()))
+            return True
+        #else:
+            #logging.debug("Coult not find %s in %s" % (face, cons[2].keys()))
+    return False
+
+
 
 ## public functions
 def init_user(user_id):
@@ -58,28 +71,26 @@ def _connect(user1, action, user2):
 
     # create an empty branch, or retrieve the existing
     u1_tree_out = _FACE_DATA[(user1,)].setdefault(('OuttaMyFace',), {})
-    u1_tree_in = _FACE_DATA[(user1,)].setdefault(('InMyFace',), {})
+#    u1_tree_in = _FACE_DATA[(user1,)].setdefault(('InMyFace',), {})
     # do the same for u2
     u2_tree_out = _FACE_DATA[(user2,)].setdefault(('OuttaMyFace',), {})
-    u2_tree_in = _FACE_DATA[(user2,)].setdefault(('InMyFace',), {})
+#    u2_tree_in = _FACE_DATA[(user2,)].setdefault(('InMyFace',), {})
 
     d = {'OuttaMyFace':{
             'u1_tree': u1_tree_out,
             'u2_tree': u2_tree_out},
-         'InMyFace':{
-            'u1_tree': u1_tree_in,
-            'u2_tree': u2_tree_in},
+#         'InMyFace':{
+#            'u1_tree': u1_tree_in,
+#            'u2_tree': u2_tree_in},
         }
 
 
     try:
         if d[action]['u2_tree'] is None:
-
             # if none, then that means u2_tree is empty, so do init
             _FACE_DATA[(user1,)][(action,)][(user2,)] = {}
 
         else:
-
             # else, u2_tree has some data, so update it with a new key
             _FACE_DATA[(user1,)][(action,)][(user2,)] = _FACE_DATA[(user2,)][(action,)]
 
@@ -126,7 +137,7 @@ def outta_my_face(user, face):
         from user.
     """
     _connect(user, 'OuttaMyFace', face)
-    _connect(face, 'InMyFace', user)
+#    _connect(face, 'InMyFace', user)
 
 def in_my_face(user, face):
     """ the user asks another member to be "in my face", ie, have updates from
@@ -140,7 +151,7 @@ def in_my_face(user, face):
         < tom accepts >
         tom == outta request ==> [my contacts]
     """
-    _connect(user, 'InMyFace', face)
+#    _connect(user, 'InMyFace', face)
     _connect(face, 'OuttaMyFace', user)
 
 def faced_up(user, face):
@@ -167,7 +178,7 @@ def faced_up(user, face):
 
     """
     d = {'face_enabled': user.user_enabled(face),
-         'face_InMyFace': is_outta(user, face),
+         'face_InMyFace': is_in_my_face(user, face),
          'path_to_user_from_face': None,
          'user_InMyFace': None,
          'path_to_face_from_user':None
@@ -259,16 +270,13 @@ def connection_generator(user_id, limit=10, action='OuttaMyFace'):
             yield (action, level, branch_data[child_level])
 
 
-def is_outta(user_id, face, action='OuttaMyFace'):
+def is_outta_my_face(user_id, face):
     """ O(n^2)
     """
-    for cons in connection_generator(user_id=user_id, action=action):
-        if (face, ) in cons[2].keys():
-            #logging.debug("Found %s in %s" % ((face), cons[2].keys()))
-            return True
-        #else:
-            #logging.debug("Coult not find %s in %s" % (face, cons[2].keys()))
-    return False
+    return _connection_tester(user_id, face)
 
-
+def is_in_my_face(user_id, face):
+    """ O(n^2)
+    """
+    return _connection_tester(face, user_id)
 
