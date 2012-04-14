@@ -65,10 +65,10 @@ def connect(user1, action, user2):
 
     d = {'OuttaMyFace':{
             'u1_tree': u1_tree_out,
-            'u2_tree': u1_tree_out},
+            'u2_tree': u2_tree_out},
          'InMyFace':{
             'u1_tree': u1_tree_in,
-            'u2_tree': u1_tree_in},
+            'u2_tree': u2_tree_in},
         }
 
 
