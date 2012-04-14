@@ -52,7 +52,7 @@ def _child_keys_generator(user_id, action='OuttaMyFace'):
 def init_user(user_id):
     return _FACE_DATA.setdefault((user_id,), {})
 
-def connect(user1, action, user2):
+def _connect(user1, action, user2):
     """ docs
     """
 
@@ -125,7 +125,8 @@ def outta_my_face(user, face):
         additionally, all faces that are outta on face1 will receive posts
         from user.
     """
-    connect(user, 'OuttaMyFace', face)
+    _connect(user, 'OuttaMyFace', face)
+    _connect(face, 'InMyFace', user)
 
 def in_my_face(user, face):
     """ the user asks another member to be "in my face", ie, have updates from
@@ -139,7 +140,8 @@ def in_my_face(user, face):
         < tom accepts >
         tom == outta request ==> [my contacts]
     """
-    connect(user, 'InMyFace', face)
+    _connect(user, 'InMyFace', face)
+    _connect(face, 'OuttaMyFace', user)
 
 def faced_up(user, face):
     """ Test to see if a face is connected. will posts to the user's page be
@@ -165,7 +167,7 @@ def faced_up(user, face):
 
     """
     d = {'face_enabled': user.user_enabled(face),
-         'face_InMyFace': None,
+         'face_InMyFace': is_outta(user, face),
          'path_to_user_from_face': None,
          'user_InMyFace': None,
          'path_to_face_from_user':None
@@ -186,8 +188,15 @@ def connect_list(users_list):
         O(n)
     """
     connections_loaded = 0
+    d = {'OuttaMyFace': outta_my_face,
+         'InMyFace': in_my_face}
+
     for r in users_list:
-        connect(r[0], r[1], r[2])
+        user_id = r[0]
+        action = r[1]
+        face = r[2]
+
+        d[action](user_id, face)
         connections_loaded += 1
 
     return connections_loaded
