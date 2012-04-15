@@ -97,6 +97,8 @@ def test_bi_direction_out():
     # finally, test to make sure these users aren't connected to uid1
     assert_false(actions.is_outta_my_face(uid1, uid6))
     assert_false(actions.is_outta_my_face(uid1, uid7))
+    assert_false(actions.is_in_my_face(uid1, uid6))
+    assert_false(actions.is_in_my_face(uid1, uid7))
     actions._FACE_DATA = {}
 
 @with_setup(setup=_setup,teardown=_teardown)
@@ -120,4 +122,31 @@ def test_bi_direction_in():
     # finally, test to make sure these users aren't connected to uid1
     assert_false(actions.is_outta_my_face(uid1, uid6))
     assert_false(actions.is_outta_my_face(uid1, uid7))
+    assert_false(actions.is_in_my_face(uid1, uid6))
+    assert_false(actions.is_in_my_face(uid1, uid7))
+
+@with_setup(setup=_setup,teardown=_teardown)
+def test_bi_direction_inout():
+    uid1 = ROWS[0][2]
+
+    # these users are not connected to uid1
+    uid6 = 'crap'
+    user.enroll(uid6,uid6,uid6,uid6)
+    uid7 = 'crap2'
+    user.enroll(uid7,uid7,uid7,uid7)
+
+    actions.in_my_face(uid6, uid7)
+    actions.outta_my_face(uid6, uid7)
+    assert_true(actions.is_outta_my_face(uid6, uid7))
+    assert_true(actions.is_in_my_face(uid7, uid6))
+
+    # inverse test
+    assert_true(actions.is_outta_my_face(uid7, uid6))
+    assert_true(actions.is_in_my_face(uid6, uid7))
+
+    # finally, test to make sure these users aren't connected to uid1
+    assert_false(actions.is_outta_my_face(uid1, uid6))
+    assert_false(actions.is_outta_my_face(uid1, uid7))
+    assert_false(actions.is_in_my_face(uid1, uid6))
+    assert_false(actions.is_in_my_face(uid1, uid7))
 
