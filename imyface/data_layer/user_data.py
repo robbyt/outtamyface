@@ -24,4 +24,10 @@ class UserData(object):
     def reset(self):
         UserData.data = {}
 
+    def insert(self, user_id, value):
+        UserData.data[(user_id,)] = value
+
+    def update_subkey(self, user_id, sub_key, value):
+        UserData.data.get((user_id,))[sub_key] = value
+
 #USER_DATA = UserData()
