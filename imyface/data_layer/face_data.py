@@ -24,4 +24,6 @@ class FaceData(object):
     def reset(self):
         FaceData.data = {}
 
-#FACE_DATA = FaceData()
+    def init_user(self, user_id):
+        return FaceData.data.setdefault((user_id,), {})
+

@@ -26,6 +26,7 @@ def _new_user(last_name,
 #    logging.debug("Added new user %s to user_data" % (user_id))
     # create an empty node in the face_data db
     connect.init_user(user_id)
+
 #    logging.debug("Added new user %s to face_data" % (user_id))
 
 #    if save:

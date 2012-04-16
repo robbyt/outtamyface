@@ -9,7 +9,7 @@ class ConnectionProblem(Exception):
 
 ## public functions
 def init_user(user_id):
-    return _FACE_DATA.data.setdefault((user_id,), {})
+    return _FACE_DATA.init_user(user_id)
 
 def _connect(user1, action, user2):
     """ docs
