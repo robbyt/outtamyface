@@ -11,12 +11,13 @@ from imyface.data_layer.face_data import FaceData
 _USER_DATA = UserData()
 _FACE_DATA = FaceData()
 
+from tests import user_test
 
 CONNECTIONS_LOADED = 0
 ROWS = []
 
 #@with_setup(setup=user_test.setup,teardown=user_test.tear_down)
-def load_users():
+def load_connections():
     global CONNECTIONS_LOADED
     global ROWS
 
@@ -30,6 +31,10 @@ def load_users():
     for r in range(0, 10):
         # load the first 10 rows into a global for testing
         ROWS.append(connections_list[r])
+
+def load_users():
+    user_test.load_users()
+    load_connections()
 
 def teardown():
     global CONNECTIONS_LOADED
@@ -96,7 +101,6 @@ def test_bi_direction_out():
     assert_false(actions.is_outta_my_face(uid1, uid7))
     assert_false(actions.is_in_my_face(uid1, uid6))
     assert_false(actions.is_in_my_face(uid1, uid7))
-    face_data.FACE_DATA = {}
 
 @with_setup(setup=load_users, teardown=teardown)
 def test_bi_direction_in():
