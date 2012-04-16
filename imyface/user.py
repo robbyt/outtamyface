@@ -52,10 +52,10 @@ def user_enabled(user_id):
     return _USER_DATA.data.get((user_id,))['enabled']
 
 def disable_user(user_id):
-    _USER_DATA.data.get((user_id,))['enabled'] = False
+    _USER_DATA.update_subkey(user_id, 'enabled', False)
 
 def enable_user(user_id):
-    _USER_DATA.data.get((user_id,))['enabled'] = True
+    _USER_DATA.update_subkey(user_id, 'enabled', True)
 
 def get_user(user_id):
     return _USER_DATA.data.get((user_id,))['data']
