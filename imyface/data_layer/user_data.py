@@ -1,26 +1,27 @@
 import os
 import persist
 
-PERSIST_DATA = os.path.dirname(__file__) + '/user_data.pickle'
+class UserData(object):
+    data = {}
+    def __init__(self):
+        self.persist = os.path.dirname(__file__) + '/user_data.pickle'
+        self.save_every = 3
 
-SAVE_EVERY = 3
+    def load(self):
+        try:
+            UserData.data = persist.load(self.persist)
+        except:
+            UserData.data = {}
 
-try:
-    USER_DATA = persist.load(PERSIST_DATA)
+    def save(self):
 
-except:
-    USER_DATA = {}
+        if self.save_every <= 1:
+            persist.save(UserData.data, self.persist)
+            self.save_every = 3
+        else:
+            self.save_every -= 1
 
+    def reset(self):
+        UserData.data = {}
 
-def save():
-    global SAVE_EVERY
-
-    if SAVE_EVERY <= 1:
-        persist.save(USER_DATA, PERSIST_DATA)
-        SAVE_EVERY = 3
-    else:
-        SAVE_EVERY -= 1
-
-def reset():
-    global USER_DATA
-    USER_DATA = {}
+#USER_DATA = UserData()

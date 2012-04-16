@@ -1,24 +1,27 @@
 import os
 import persist
 
-PERSIST_DATA = os.path.dirname(__file__) + '/face_data.pickle'
-SAVE_EVERY = 3
+class FaceData(object):
+    data = {}
+    def __init__(self):
+        self.persist = os.path.dirname(__file__) + '/face_data.pickle'
+        self.save_every = 3
 
-try:
-    FACE_DATA = persist.load(PERSIST_DATA)
+    def load(self):
+        try:
+            FaceData.data = persist.load(self.persist)
+        except:
+            FaceData.data = {}
 
-except:
-    FACE_DATA = {}
+    def save(self):
 
-def save():
-    global SAVE_EVERY
+        if self.save_every <= 1:
+            persist.save(FaceData.data, self.persist)
+            self.save_every = 3
+        else:
+            self.save_every -= 1
 
-    if SAVE_EVERY <= 1:
-        persist.save(FACE_DATA, PERSIST_DATA)
-        SAVE_EVERY = 3
-    else:
-        SAVE_EVERY -= 1
+    def reset(self):
+        FaceData.data = {}
 
-def reset():
-    global FACE_DATA
-    FACE_DATA = {}
+#FACE_DATA = FaceData()

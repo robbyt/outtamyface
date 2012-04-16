@@ -2,8 +2,8 @@ import logging
 from collections import deque
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 
-from data_layer.face_data import FACE_DATA as _FACE_DATA
-
+from data_layer.face_data import FaceData
+_FACE_DATA = FaceData()
 
 ## private functions
 def _connection_generator(user_id, limit=10, action='OuttaMyFace'):
@@ -71,7 +71,7 @@ def _get_child_keys(user_id, action='OuttaMyFace'):
         user_id = user_id[0]
 
     try:
-        d = _FACE_DATA[(user_id,)][(action,)].keys()
+        d = _FACE_DATA.data[(user_id,)][(action,)].keys()
         if d:
             return d
         else:
@@ -87,13 +87,13 @@ def _child_keys_generator(user_id, action='OuttaMyFace'):
     try:
 
         if type(user_id) is str:
-            connections = _FACE_DATA[(user_id,)][(action,)].keys()
+            connections = _FACE_DATA.data[(user_id,)][(action,)].keys()
             for row in set(connections):
                 yield row
 
         elif type(user_id) is list:
             for row in user_id:
-                connections = _FACE_DATA[(row,)][(action,)].keys()
+                connections = _FACE_DATA.data[(row,)][(action,)].keys()
                 for k in set(connections):
                     yield k
 
@@ -122,9 +122,9 @@ def _connection_path_finder(user_id, face):
 def get_face_data(user_id, action=None):
     try:
         if action is None:
-            return _FACE_DATA[(user_id,)]
+            return _FACE_DATA.data[(user_id,)]
         else:
-            return _FACE_DATA[(user_id,)][(action,)]
+            return _FACE_DATA.data[(user_id,)][(action,)]
     except KeyError:
             logging.warn("Problem finding face_data for: {0} / {1}".format(user_id, action))
             return

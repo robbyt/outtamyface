@@ -4,8 +4,8 @@ logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 
 import connect
 
-from data_layer.user_data import USER_DATA as _USER_DATA
-#from data_layer.face_data import FACE_DATA as _FACE_DATA
+from data_layer.user_data import UserData
+_USER_DATA = UserData()
 
 class UserExists(Exception):
     pass
@@ -20,7 +20,7 @@ def _new_user(last_name,
         Each member of the dict must be unique, as identified by the key.
     """
     # add new row to user_data db
-    _USER_DATA[(user_id,)] = {'data': (first_name, last_name, password), 
+    _USER_DATA.data[(user_id,)] = {'data': (first_name, last_name, password), 
                               'enabled': True}
 
 #    logging.debug("Added new user %s to user_data" % (user_id))
@@ -36,7 +36,7 @@ def _new_user(last_name,
 def is_existing_user(user_id):
     """Check to see if a user exists in the data dict
     """
-    return _USER_DATA.has_key((user_id,))
+    return _USER_DATA.data.has_key((user_id,))
 
 def enroll(first_name, 
            last_name,
@@ -50,19 +50,19 @@ def enroll(first_name,
         raise UserExists("Found existing user %s in db" % (user_id))
 
 def user_enabled(user_id):
-    return _USER_DATA.get((user_id,))['enabled']
+    return _USER_DATA.data.get((user_id,))['enabled']
 
 def disable_user(user_id):
-    _USER_DATA.get((user_id,))['enabled'] = False
+    _USER_DATA.data.get((user_id,))['enabled'] = False
 
 def enable_user(user_id):
-    _USER_DATA.get((user_id,))['enabled'] = True
+    _USER_DATA.data.get((user_id,))['enabled'] = True
 
 def get_user(user_id):
-    return _USER_DATA.get((user_id,))['data']
+    return _USER_DATA.data.get((user_id,))['data']
 
 def get_user_count():
-    return len(_USER_DATA)
+    return len(_USER_DATA.data)
 
 def enroll_list(users_list):
     """ Enroll all users in a list

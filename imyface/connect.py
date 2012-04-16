@@ -1,43 +1,39 @@
 import logging
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 
-from data_layer.face_data import FACE_DATA as _FACE_DATA
+from data_layer.face_data import FaceData
+_FACE_DATA = FaceData()
 
 class ConnectionProblem(Exception):
     pass
 
 ## public functions
 def init_user(user_id):
-    return _FACE_DATA.setdefault((user_id,), {})
+    return _FACE_DATA.data.setdefault((user_id,), {})
 
 def _connect(user1, action, user2):
     """ docs
     """
 
     # create an empty branch, or retrieve the existing
-    u1_tree_out = _FACE_DATA[(user1,)].setdefault(('OuttaMyFace',), {})
-#    u1_tree_in = _FACE_DATA[(user1,)].setdefault(('InMyFace',), {})
+    u1_tree_out = _FACE_DATA.data[(user1,)].setdefault(('OuttaMyFace',), {})
     # do the same for u2
-    u2_tree_out = _FACE_DATA[(user2,)].setdefault(('OuttaMyFace',), {})
-#    u2_tree_in = _FACE_DATA[(user2,)].setdefault(('InMyFace',), {})
+    u2_tree_out = _FACE_DATA.data[(user2,)].setdefault(('OuttaMyFace',), {})
 
     d = {'OuttaMyFace':{
             'u1_tree': u1_tree_out,
             'u2_tree': u2_tree_out},
-#         'InMyFace':{
-#            'u1_tree': u1_tree_in,
-#            'u2_tree': u2_tree_in},
         }
 
 
     try:
         if d[action]['u2_tree'] is None:
             # if none, then that means u2_tree is empty, so do init
-            _FACE_DATA[(user1,)][(action,)][(user2,)] = {}
+            _FACE_DATA.data[(user1,)][(action,)][(user2,)] = {}
 
         else:
             # else, u2_tree has some data, so update it with a new key
-            _FACE_DATA[(user1,)][(action,)][(user2,)] = _FACE_DATA[(user2,)][(action,)]
+            _FACE_DATA.data[(user1,)][(action,)][(user2,)] = _FACE_DATA.data[(user2,)][(action,)]
 
     except KeyError:
         raise ConnectionProblem
@@ -45,7 +41,7 @@ def _connect(user1, action, user2):
 
 def disconnect(user1, action, user2):
     try:
-        del(_FACE_DATA[(user1,)][(action,)][(user2,)])
+        del(_FACE_DATA.data[(user1,)][(action,)][(user2,)])
         return True
     except KeyError:
         logging.warn("Problem in {1} tree, cannot remove {1} / {2}".format(user1, action, user2))

@@ -2,9 +2,12 @@ from nose.tools import *
 import cPickle as pickle
 
 from test_config import USER_DATA_FILE
-from imyface import user, actions, connect
+from imyface import user, actions
 
-from imyface.data_layer import user_data
+from imyface.data_layer.user_data import UserData
+from imyface.data_layer.face_data import FaceData
+_USER_DATA = UserData()
+_FACE_DATA = FaceData()
 
 USERS_LOADED = 0
 FIRST_ROW = None
@@ -20,7 +23,9 @@ U2 = {'first_name':'John',
       'password':'pass'}
 
 def load_one_user():
-    print user_data.USER_DATA
+    print _USER_DATA
+    print _FACE_DATA
+    teardown()
     user.enroll(**U1)
 
 def load_two_users():
@@ -40,20 +45,26 @@ def load_users():
     #grab the first row of test users
     FIRST_ROW = user_list[0]
 
+TEARCOUNT = 0
 def teardown():
     print "teardown ran"
     global USERS_LOADED
     global FIRST_ROW
+    global TEARCOUNT
     USERS_LOADED = 0
     FIRST_ROW = None
-    user_data.reset()
+    _USER_DATA.reset()
+    _FACE_DATA.reset()
+    TEARCOUNT += 1
+    print TEARCOUNT
 
-@with_setup(setup=load_users, teardown=teardown)
+#@with_setup(load_users, teardown)
 def test_enroll_load():
     """ Loads some users data into our db from USER_DATA_FILE, which returns 
         #rows and 1st row. Then count the number of rows in our db, and check
         the first row to make sure it loaded correctly.
     """
+    load_users()
     users_in_db = user.get_user_count()
     assert_equal(users_in_db, USERS_LOADED)
 
@@ -64,44 +75,54 @@ def test_enroll_load():
     t_password = t_user[3]
 
     assert_equal((t_fn, t_ln, t_password), user.get_user(t_user_id)) 
+    teardown()
 
-@with_setup(setup=load_one_user, teardown=teardown)
+#@with_setup(load_one_user, teardown)
 def test_enroll_one():
+    load_one_user()
     u = user.get_user(U1['user_id'])
     assert_equal(u, (U1['first_name'], U1['last_name'], U1['password']))
+    teardown()
 
-@with_setup(setup=load_one_user, teardown=teardown)
+#@with_setup(load_one_user, teardown)
 def test_empty_face_data():
     """ We just created this user, so the face_data should be empty.
     """
+    load_one_user()
     assert_equal(actions.get_face_data(U1['user_id']), {})
+    teardown()
 
-@with_setup(setup=load_one_user, teardown=teardown)
+#@with_setup(setup=load_one_user, teardown=teardown)
 def test_user_enabled():
+    load_one_user()
     uid = U1['user_id']
     assert_true(user.user_enabled(uid))
     user.disable_user(uid)
     assert_false(user.user_enabled(uid))
     user.enable_user(uid)
     assert_true(user.user_enabled(uid))
+    teardown()
 
-@with_setup(teardown=teardown)
+#@with_setup(teardown=teardown)
 def test_no_dupes():
     """ Make sure that dupe users cannot be enrolled
     """
     user.enroll('John', 'Smith', 'jsmith', 'pass')
     with assert_raises(user.UserExists):
         user.enroll('John', 'Smith', 'jsmith', 'pass')
+    teardown()
 
-@with_setup(setup=load_one_user, teardown=teardown)
+#@with_setup(setup=load_one_user, teardown=teardown)
 def test_is_existing():
     """ the jsmith user should still exist, even though we tried to create a
         duplicate user in the last test.
     """
+    load_one_user()
     assert_true(user.is_existing_user(U1['user_id']))
+    teardown()
 
 #@with_setup(setup=load_two_users, teardown=teardown)
-@with_setup(teardown=teardown)
+#@with_setup(teardown=teardown)
 def test_dupe_names():
     """ User accounts should allow duplicate info for everything other than 
         the user_id.
@@ -120,3 +141,4 @@ def test_dupe_names():
     assert_equal(u1_ln, u2_ln)
     assert_equal(u1_pw, u2_pw)
 
+    teardown()

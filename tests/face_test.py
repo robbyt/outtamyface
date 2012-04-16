@@ -6,10 +6,11 @@ from test_config import FACE_DATA_FILE
 
 from imyface import actions, user, connect
 
-from imyface.data_layer import user_data, face_data
+from imyface.data_layer.user_data import UserData
+from imyface.data_layer.face_data import FaceData
+_USER_DATA = UserData()
+_FACE_DATA = FaceData()
 
-#_USER_DATA = user_data.USER_DATA
-#_FACE_DATA = face_data.FACE_DATA
 
 CONNECTIONS_LOADED = 0
 ROWS = []
@@ -19,14 +20,8 @@ def setup():
     global CONNECTIONS_LOADED
     global ROWS
 
-#    user_test.tear_down()
-#    user_test.setup()
-
-#    print _USER_DATA
-#    print _FACE_DATA
-
-    user_data.reset()
-    face_data.reset()
+    _USER_DATA.reset()
+    _FACE_DATA.reset()
 
     fp = open(FACE_DATA_FILE, 'rb')
     connections_list = pickle.load(fp)
