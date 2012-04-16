@@ -16,12 +16,12 @@ CONNECTIONS_LOADED = 0
 ROWS = []
 
 #@with_setup(setup=user_test.setup,teardown=user_test.tear_down)
-def setup():
+def load_users():
     global CONNECTIONS_LOADED
     global ROWS
 
-    _USER_DATA.reset()
-    _FACE_DATA.reset()
+#    _USER_DATA.reset()
+#    _FACE_DATA.reset()
 
     fp = open(FACE_DATA_FILE, 'rb')
     connections_list = pickle.load(fp)
@@ -31,25 +31,23 @@ def setup():
         # load the first 10 rows into a global for testing
         ROWS.append(connections_list[r])
 
-    return
-
 def teardown():
     global CONNECTIONS_LOADED
     global FIRST_ROW
     CONNECTIONS_LOADED = 0 
     FIRST_ROW = None
 #    user_test.tear_down()
-    user_data.reset()
-    face_data.reset()
+    _USER_DATA.reset()
+    _FACE_DATA.reset()
 
-@with_setup(setup=setup,teardown=teardown)
+@with_setup(setup=load_users, teardown=teardown)
 def test_direct_connection():
     uid1 = ROWS[0][2]
     uid2 = ROWS[1][2]
     connect.outta_my_face(uid1, uid2)
     assert_true(actions.is_outta_my_face(uid1, uid2))
 
-@with_setup(setup=setup,teardown=teardown)
+@with_setup(setup=load_users, teardown=teardown)
 def test_second_connection():
     """ test connected, not connected users
     """
@@ -75,7 +73,7 @@ def test_second_connection():
     assert_true(actions.is_outta_my_face(uid1, uid4))
 
 
-@with_setup(setup=setup,teardown=teardown)
+@with_setup(setup=load_users, teardown=teardown)
 def test_bi_direction_out():
     uid1 = ROWS[0][2]
 
@@ -100,7 +98,7 @@ def test_bi_direction_out():
     assert_false(actions.is_in_my_face(uid1, uid7))
     face_data.FACE_DATA = {}
 
-@with_setup(setup=setup,teardown=teardown)
+@with_setup(setup=load_users, teardown=teardown)
 def test_bi_direction_in():
     uid1 = ROWS[0][2]
 
@@ -124,7 +122,7 @@ def test_bi_direction_in():
     assert_false(actions.is_in_my_face(uid1, uid6))
     assert_false(actions.is_in_my_face(uid1, uid7))
 
-@with_setup(setup=setup,teardown=teardown)
+@with_setup(setup=load_users, teardown=teardown)
 def test_bi_direction_in_and_out():
     uid1 = ROWS[0][2]
 
