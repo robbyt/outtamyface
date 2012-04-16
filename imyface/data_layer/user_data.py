@@ -20,3 +20,7 @@ def save():
         SAVE_EVERY = 3
     else:
         SAVE_EVERY -= 1
+
+def reset():
+    global USER_DATA
+    USER_DATA = {}

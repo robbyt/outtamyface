@@ -2,7 +2,7 @@
 import logging
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 
-import actions
+import connect
 
 from data_layer.user_data import USER_DATA as _USER_DATA
 #from data_layer.face_data import FACE_DATA as _FACE_DATA
@@ -26,7 +26,7 @@ def _new_user(last_name,
 #    logging.debug("Added new user %s to user_data" % (user_id))
 
     # create an empty node in the face_data db
-    actions.init_user(user_id)
+    connect.init_user(user_id)
 #    logging.debug("Added new user %s to face_data" % (user_id))
 
 #    if save:

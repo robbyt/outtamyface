@@ -18,3 +18,7 @@ def save():
         SAVE_EVERY = 3
     else:
         SAVE_EVERY -= 1
+
+def reset():
+    global FACE_DATA
+    FACE_DATA = {}
