@@ -54,8 +54,8 @@ def _connection_generator(user_id, limit=10, action='OuttaMyFace'):
                         pass
                         #child_list[i].append(('',))
 
-                # finally, mark this parent as visited
-                visited.append(i)
+                    # finally, mark this parent as visited
+                    visited.append(i)
 
         branch_data[child_level] = child_list
         level += 1
