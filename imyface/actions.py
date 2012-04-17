@@ -2,6 +2,8 @@ import logging
 from collections import deque
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 
+import user
+
 from data_layer.face_data import FaceData
 _FACE_DATA = FaceData()
 
@@ -24,11 +26,9 @@ def _connection_generator(user_id, limit=10, action='OuttaMyFace'):
     while level < limit:
         # capture the current level of the tree
         parent_level = level
-#        logging.debug("Parent level: " + str(parent_level))
 
         # increment the level, to track our child level
         child_level = level + 1
-#        logging.debug("Child level: " + str(child_level))
 
         # empty dict that will store our results for this level
         child_list = {}
@@ -37,7 +37,6 @@ def _connection_generator(user_id, limit=10, action='OuttaMyFace'):
         for parent, child in branch_data[parent_level].iteritems():
 
             for i in child:
-#                logging.debug("Lookup for: " + str(i) )
                 # create an empty list, use parent as key
                 child_list[i] = []
 
@@ -50,8 +49,10 @@ def _connection_generator(user_id, limit=10, action='OuttaMyFace'):
     
                             # and add each child to the child_list results
                             child_list[i].append(next_child)
+
                     except TypeError:
-                        child_list[i].append(('',))
+                        pass
+                        #child_list[i].append(('',))
 
                 # finally, mark this parent as visited
                 visited.append(i)
@@ -75,7 +76,6 @@ def _get_child_keys(user_id, action='OuttaMyFace'):
         if d:
             return d
         else:
-#            assert(False)
             return ['']
     except KeyError:
         return
@@ -83,14 +83,11 @@ def _get_child_keys(user_id, action='OuttaMyFace'):
 def _child_keys_generator(user_id, action='OuttaMyFace'):
     """ user_id keys as generator
     """
-#    visited = []
     try:
-
         if type(user_id) is str:
             connections = _FACE_DATA.data[(user_id,)][(action,)].keys()
             for row in set(connections):
                 yield row
-
         elif type(user_id) is list:
             for row in user_id:
                 connections = _FACE_DATA.data[(row,)][(action,)].keys()
@@ -107,10 +104,7 @@ def _connection_tester(user_id, face):
     """
     for cons in _connection_generator(user_id=user_id, action='OuttaMyFace'):
         if (face, ) in cons[2].keys():
-            #logging.debug("Found %s in %s" % ((face), cons[2].keys()))
             return True
-        #else:
-            #logging.debug("Coult not find %s in %s" % (face, cons[2].keys()))
     return False
 
 
@@ -129,7 +123,7 @@ def get_face_data(user_id, action=None):
             logging.warn("Problem finding face_data for: {0} / {1}".format(user_id, action))
             return
 
-def faced_up(user, face):
+def faced_up(user_id, face):
     """ Test to see if a face is connected. will posts to the user's page be
         displayed on the face's page. Tests connection.
 
@@ -152,14 +146,17 @@ def faced_up(user, face):
           the user.
 
     """
-    d = {'face_enabled': user.user_enabled(face),
-         'face_InMyFace': is_in_my_face(user, face),
-         'path_to_user_from_face': None,
-         'user_InMyFace': None,
-         'path_to_face_from_user':None
-        }
-    try:
+    def data():
+        d = {'face_enabled': user.user_enabled(face),
+             'face_InMyFace': is_in_my_face(user_id, face),
+             'path_to_user_from_face': None,
+             'user_InMyFace': is_outta_my_face(user_id, face),
+             'path_to_face_from_user':None,
+            }
         return d
+
+    try:
+        return data()
     except:
         return False
 
