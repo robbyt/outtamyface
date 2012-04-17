@@ -74,23 +74,6 @@ def _get_child_keys(user_id, action='OuttaMyFace'):
     except KeyError:
         return
 
-def _child_keys_generator(user_id, action='OuttaMyFace'):
-    """ user_id keys as generator
-    """
-    try:
-        if type(user_id) is str:
-            connections = _FACE_DATA.data[(user_id,)][(action,)].keys()
-            for row in set(connections):
-                yield row
-        elif type(user_id) is list:
-            for row in user_id:
-                connections = _FACE_DATA.data[(row,)][(action,)].keys()
-                for k in set(connections):
-                    yield k
-
-    except KeyError:
-        logging.error("Key not found in _ckg: " + str(user_id))
-        return
 
 def _connection_tester(user_id, face):
     """ test to see if a user is connected by checking each level of the tree
