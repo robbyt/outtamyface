@@ -37,18 +37,12 @@ def _connection_generator(user_id, limit=10, action='OuttaMyFace'):
         for parent, child in branch_data[parent_level].iteritems():
 
             for i in child:
-                # create an empty list, use parent as key
-                child_list[i] = []
-
                 # then check to see if we've already visited this parent node
                 if i not in visited:
                     
                     # if we haven't, then find that parent's children
                     try:
-                        for next_child in _get_child_keys(i):
-    
-                            # and add each child to the child_list results
-                            child_list[i].append(next_child)
+                        child_list[i] = [k for k in _get_child_keys(i)]
 
                     except TypeError:
                         pass
