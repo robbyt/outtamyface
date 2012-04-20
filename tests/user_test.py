@@ -126,3 +126,8 @@ def test_dupe_names():
     assert_equal(u1_fn, u2_fn)
     assert_equal(u1_ln, u2_ln)
     assert_equal(u1_pw, u2_pw)
+
+@with_setup(setup=load_one_user, teardown=teardown)
+def test_get_user_null():
+    r = user.get_user('nope')
+    assert_true(r is None)

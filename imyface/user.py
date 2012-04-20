@@ -59,7 +59,11 @@ def enable_user(user_id):
     _USER_DATA.update_subkey(user_id, 'enabled', True)
 
 def get_user(user_id):
-    return _USER_DATA.data.get((user_id,))['data']
+    u = _USER_DATA.data.get((user_id,), None)
+    if u is None:
+        return
+    user_data = u['data']
+    return user_data
 
 def get_user_count():
     return len(_USER_DATA.data)
