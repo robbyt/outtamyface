@@ -178,8 +178,8 @@ def test_flat_list():
     print users_set2_flat
 
     # first connection is always the user we started searching at
-    assert_equal(users_set1[0][2].keys(), [(u1,)] )
-    assert_equal(users_set2[0][2].keys(), [(u3,)] )
+    assert_equal(users_set1[0][1].keys(), [(u1,)] )
+    assert_equal(users_set2[0][1].keys(), [(u3,)] )
 
     # our user_set data should be a list of users, with order
     assert_equal(users_set1_flat, [(u1,), (u2,), (mr_popular,)] )

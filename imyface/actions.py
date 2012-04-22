@@ -8,7 +8,7 @@ from data_layer.face_data import FaceData
 _FACE_DATA = FaceData()
 
 ## private functions
-def _connection_generator(user_id, limit=10, action='OuttaMyFace'):
+def _connection_generator(user_id, limit=10):
     """ O(n)
     """
     level = 0
@@ -21,7 +21,7 @@ def _connection_generator(user_id, limit=10, action='OuttaMyFace'):
         logging.warn("Connection lookup for empty nodes")
         return
 
-    yield (action, level, branch_data[0],)
+    yield (level, branch_data[0],)
 
     while level < limit:
         # capture the current level of the tree
@@ -56,7 +56,7 @@ def _connection_generator(user_id, limit=10, action='OuttaMyFace'):
         if len(branch_data[child_level]) is 0:
             break
         else:
-            yield (action, level, branch_data[child_level])
+            yield (level, branch_data[child_level])
 
 
 def _all_connections(user_id):
@@ -71,7 +71,7 @@ def _flatten_connections(connections_data):
     Feed this the entire output from the connections_generator, and this will
     flatten that data structure, and return a basic list.
     """
-    return [i[2].keys()[0] for i in connections_data]
+    return [i[1].keys()[0] for i in connections_data]
 
 def _connections_as_set(user_id):
     connections = _all_connections(user_id)
@@ -98,8 +98,8 @@ def _connection_tester(user_id, face):
     """ test to see if a user is connected by checking each level of the tree
         O(n^2)
     """
-    for cons in _connection_generator(user_id=user_id, action='OuttaMyFace'):
-        if (face, ) in cons[2].keys():
+    for cons in _connection_generator(user_id):
+        if (face, ) in cons[1].keys():
             return True
     return False
 
