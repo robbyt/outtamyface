@@ -151,3 +151,47 @@ def test_bi_direction_in_and_out():
     assert_false(actions.is_in_my_face(uid1, uid6))
     assert_false(actions.is_in_my_face(uid1, uid7))
 
+@with_setup(teardown=teardown)
+def test_flat_list():
+    u1 = 'uid1'
+    u2 = 'uid2'
+    u3 = 'uid3'
+    u4 = 'uid4'
+    mr_popular = 'uid5'
+    user.enroll(u1, u1, u1, u1)
+    user.enroll(u2, u2, u2, u2)
+    user.enroll(u3, u3, u3, u3)
+    user.enroll(u4, u4, u4, u4)
+    user.enroll(mr_popular, mr_popular, mr_popular, mr_popular)
+
+    connect.outta_my_face(u1, u2)
+    connect.outta_my_face(u3, u4)
+    connect.outta_my_face(u2, mr_popular)
+    connect.outta_my_face(u4, mr_popular)
+
+    users_set1 = actions._all_connections(u1)
+    users_set1_flat = actions._flatten_connections(users_set1)
+    print users_set1_flat
+
+    users_set2 = actions._all_connections(u3)
+    users_set2_flat = actions._flatten_connections(users_set2)
+    print users_set2_flat
+
+    # first connection is always the user we started searching at
+    assert_equal(users_set1[0][2].keys(), [(u1,)] )
+    assert_equal(users_set2[0][2].keys(), [(u3,)] )
+
+    # our user_set data should be a list of users, with order
+    assert_equal(users_set1_flat, [(u1,), (u2,), (mr_popular,)] )
+    assert_equal(users_set2_flat, [(u3,), (u4,), (mr_popular,)] )
+
+    intersect = {(mr_popular,)}
+
+    print actions.face_space(u1, u3)
+
+    #mr_popular should be connected to everyone
+    assert_equal(actions.face_space(u1, u3), intersect)
+    assert_equal(actions.face_space(u3, u1), intersect)
+    assert_equal(actions.face_space(u2, u4), intersect)
+    assert_equal(actions.face_space(u4, u2), intersect)
+

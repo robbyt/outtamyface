@@ -59,6 +59,25 @@ def _connection_generator(user_id, limit=10, action='OuttaMyFace'):
             yield (action, level, branch_data[child_level])
 
 
+def _all_connections(user_id):
+    """
+    Generators are great, but sometimes we just want all the data.
+    This will build a list that contains all of a user's connections.
+    """
+    return [con for con in _connection_generator(user_id)]
+
+def _flatten_connections(connections_data):
+    """
+    Feed this the entire output from the connections_generator, and this will
+    flatten that data structure, and return a basic list.
+    """
+    return [i[2].keys()[0] for i in connections_data]
+
+def _connections_as_set(user_id):
+    connections = _all_connections(user_id)
+    flat_connections = _flatten_connections(connections)
+    return set(flat_connections)
+
 def _get_child_keys(user_id, action='OuttaMyFace'):
     """ returns a list of keys
     """
@@ -137,11 +156,19 @@ def faced_up(user_id, face):
     except:
         return False
 
+
+
 def face_space(user_a, user_b):
     """ with which members are both user_a and user_b indirectly connected?
         ie, who sees posts from both users_a and users_b
     """
-    pass
+    return connection_intersect(user_a, user_b)
+
+def connection_intersect(user_a, user_b):
+    user_a_set = _connections_as_set(user_a)
+    user_b_set = _connections_as_set(user_b)
+
+    return user_a_set.intersection(user_b_set)
 
 def is_outta_my_face(user_id, face):
     """ O(n^2)
