@@ -104,8 +104,10 @@ def _connection_tester(user_id, face):
     return False
 
 
-def _connection_path_finder(user_id, face):
-    pass
+def _connection_path_finder(user_a, user_b):
+    user_a_cons = _all_connections(user_a)
+    user_b_cons = _all_connections(user_b)
+    return 
 
 
 ## public functions
