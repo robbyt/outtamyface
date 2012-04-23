@@ -212,7 +212,28 @@ def test_face_path():
     connect.outta_my_face(u1, u2)
     connect.outta_my_face(u3, u4)
     connect.outta_my_face(u2, mr_popular)
+
+    # basic path test
+    assert_equal(actions.find_path(u1, mr_popular),
+                 [(u2,), (mr_popular,)])
+    
+    # if find_path can't find a connection, it should return False
+    assert_false(actions.find_path(mr_popular, u1))
+    assert_false(actions.find_path(u1, u4))
+
+    # test some cycles
+    connect.outta_my_face(mr_popular, u3)
+    connect.outta_my_face(u1, u3)
     connect.outta_my_face(u4, mr_popular)
 
-    p1 = actions.find_path(u1, mr_popular)
-    assert_equal(p1,[(u2,), (mr_popular,)])
+    # test the new path, with cycles, return shortest
+    assert_equal(actions.find_path(u1, mr_popular),
+                 [(u3,), (u4,), (mr_popular,)])
+
+    # do the same thing, but find the shortest path
+    assert_equal(actions.find_path(u1, mr_popular, find_shortest=True),
+                 [(u2,), (mr_popular,)])
+    
+
+
+
