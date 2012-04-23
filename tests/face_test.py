@@ -17,6 +17,19 @@ CONNECTIONS_LOADED = 0
 ROWS = []
 
 #@with_setup(setup=user_test.setup,teardown=user_test.tear_down)
+def five_users():
+    u1 = 'uid1'
+    u2 = 'uid2'
+    u3 = 'uid3'
+    u4 = 'uid4'
+    u5 = 'uid5'
+    user.enroll(u1, u1, u1, u1)
+    user.enroll(u2, u2, u2, u2)
+    user.enroll(u3, u3, u3, u3)
+    user.enroll(u4, u4, u4, u4)
+    user.enroll(u5, u5, u5, u5)
+
+
 def load_connections():
     global CONNECTIONS_LOADED
     global ROWS
@@ -151,19 +164,13 @@ def test_bi_direction_in_and_out():
     assert_false(actions.is_in_my_face(uid1, uid6))
     assert_false(actions.is_in_my_face(uid1, uid7))
 
-@with_setup(teardown=teardown)
+@with_setup(setup=five_users, teardown=teardown)
 def test_flat_list():
     u1 = 'uid1'
     u2 = 'uid2'
     u3 = 'uid3'
     u4 = 'uid4'
     mr_popular = 'uid5'
-    user.enroll(u1, u1, u1, u1)
-    user.enroll(u2, u2, u2, u2)
-    user.enroll(u3, u3, u3, u3)
-    user.enroll(u4, u4, u4, u4)
-    user.enroll(mr_popular, mr_popular, mr_popular, mr_popular)
-
     connect.outta_my_face(u1, u2)
     connect.outta_my_face(u3, u4)
     connect.outta_my_face(u2, mr_popular)
@@ -195,3 +202,17 @@ def test_flat_list():
     assert_equal(actions.face_space(u2, u4), intersect)
     assert_equal(actions.face_space(u4, u2), intersect)
 
+@with_setup(setup=five_users, teardown=teardown)
+def test_face_path():
+    u1 = 'uid1'
+    u2 = 'uid2'
+    u3 = 'uid3'
+    u4 = 'uid4'
+    mr_popular = 'uid5'
+    connect.outta_my_face(u1, u2)
+    connect.outta_my_face(u3, u4)
+    connect.outta_my_face(u2, mr_popular)
+    connect.outta_my_face(u4, mr_popular)
+
+    p1 = actions.find_path(u1, mr_popular)
+    assert_equal(p1,[(u2,), (mr_popular,)])
