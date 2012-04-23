@@ -145,12 +145,18 @@ def faced_up(user_id, face):
 
     """
     def data():
-        d = {'face_enabled': user.user_enabled(face),
+        d = {'user_enabled': user.user_enabled(user_id),
+             'face_enabled': user.user_enabled(face),
              'face_InMyFace': is_in_my_face(user_id, face),
              'path_to_user_from_face': None,
              'user_InMyFace': is_outta_my_face(user_id, face),
              'path_to_face_from_user':None,
             }
+
+        if d['face_InMyFace']:
+            d['path_to_user_from_face'] = find_path(user_id, face)
+            d['path_to_face_from_user'] = find_path(face, user_id)
+
         return d
 
     try:
