@@ -195,12 +195,15 @@ def find_path(user_id, face, path=None, find_shortest=False):
     else:
         # adding the current user_id to the path
         path = path + [user_id]
+
     if user_id == face:
         # through recursion, we've found our endpoint. 
         # return the full path
         return path
 
     child_keys = _get_child_keys(user_id)
+    shortest_path = None
+
     if not child_keys:
         # if we dont have a node named 'user_id' return None
         return None
@@ -208,8 +211,18 @@ def find_path(user_id, face, path=None, find_shortest=False):
     for child in child_keys:
         if child not in path:
             newpath = find_path(child, face, path)
-            if newpath: 
+
+            if newpath and not find_shortest:
+                # we don't care to find the shortest path, we just want the
+                # fastest results.
                 return newpath
-    return None
+
+            elif newpath and find_shortest:
+                # we need to know what the shortest path between two nodes is
+                # so this will take longer to test.
+                if not shortest_path or len(newpath) < len(shortest_path):
+                    shortest_path = newpath
+
+    return shortest_path
 
 
