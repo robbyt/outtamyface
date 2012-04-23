@@ -182,9 +182,7 @@ def is_in_my_face(user_id, face):
     """
     return _connection_tester(face, user_id)
 
-def find_path(user_id, face, find_shortest=False, path=None):
-
-    shortest = None
+def find_path(user_id, face, path=None, find_shortest=False):
 
     if type(user_id) is not tuple:
         user_id = (user_id,)
