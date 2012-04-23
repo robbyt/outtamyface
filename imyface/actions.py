@@ -182,3 +182,36 @@ def is_in_my_face(user_id, face):
     """
     return _connection_tester(face, user_id)
 
+def find_path(user_id, face, find_shortest=False, path=None):
+
+    shortest = None
+
+    if type(user_id) is not tuple:
+        user_id = (user_id,)
+    if type(face) is not tuple:
+        face = (face,)
+
+    if path is None:
+        # fresh path, no data yet...
+        path = []
+    else:
+        # adding the current user_id to the path
+        path = path + [user_id]
+    if user_id == face:
+        # through recursion, we've found our endpoint. 
+        # return the full path
+        return path
+
+    child_keys = _get_child_keys(user_id)
+    if not child_keys:
+        # if we dont have a node named 'user_id' return None
+        return None
+
+    for child in child_keys:
+        if child not in path:
+            newpath = find_path(child, face, path)
+            if newpath: 
+                return newpath
+    return None
+
+
