@@ -45,18 +45,14 @@ def load_users():
     #grab the first row of test users
     FIRST_ROW = user_list[0]
 
-TEARCOUNT = 0
 def teardown():
     print "teardown ran"
     global USERS_LOADED
     global FIRST_ROW
-    global TEARCOUNT
     USERS_LOADED = 0
     FIRST_ROW = None
     _USER_DATA.reset()
     _FACE_DATA.reset()
-    TEARCOUNT += 1
-    print TEARCOUNT
 
 @with_setup(load_users, teardown)
 def test_enroll_load():
@@ -95,7 +91,6 @@ def test_user_enabled():
     user.enable_user(uid)
     assert_true(user.user_enabled(uid))
 
-@with_setup(teardown=teardown)
 def test_no_dupes():
     """ Make sure that dupe users cannot be enrolled
     """
@@ -103,7 +98,7 @@ def test_no_dupes():
     with assert_raises(user.UserExists):
         user.enroll('John', 'Smith', 'jsmith', 'pass')
 
-@with_setup(setup=load_one_user, teardown=teardown)
+@with_setup(teardown=teardown)
 def test_is_existing():
     """ the jsmith user should still exist, even though we tried to create a
         duplicate user in the last test.
@@ -112,8 +107,12 @@ def test_is_existing():
 
 @with_setup(setup=load_two_users, teardown=teardown)
 def test_dupe_names():
-    """ User accounts should allow duplicate info for everything other than 
+    """ User accounts should allow duplicate data  for everything other than 
         the user_id.
+        
+        fn = first_name
+        ln = last_name
+        pw = password
     """
     u1_fn = user.get_user(U1['user_id'])[0]
     u1_ln = user.get_user(U1['user_id'])[1]
