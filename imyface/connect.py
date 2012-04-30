@@ -12,7 +12,13 @@ def init_user(user_id):
     return _FACE_DATA.init_user(user_id)
 
 def _connect(user1, user2):
-    """ docs
+    """ This will make a connection between user1 and user2 by using tuple 
+        pointer references inside a dict.
+
+        If you query the dict _FACE_DATA.data[user1] you will receive tuple 
+        references to several other keys inside that data dict.
+
+        O(log(n))
     """
 
     # create an empty branch, or retrieve the existing
