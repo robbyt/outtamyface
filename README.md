@@ -9,6 +9,11 @@ Working with this lib
 ### Run nosetests
 ```bash
 $ nosetests
+...............
+----------------------------------------------------------------------
+Ran 15 tests in 0.033s
+
+OK
 ```
 
 ### Load up the demo data:
