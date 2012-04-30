@@ -1,114 +1,101 @@
 import logging
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 
-self.idle_timeout = 600
-StateStore.client_list = []
+CLIENT_LIST = []
 CLIENT_STATE = {}
 
 class ClientListAction(Exception):
     pass
 
+class WrongType(Exception):
+    pass
 
-class State(object):
-    client_list = []
-    client_state = []
-    def __init__(self, client):
-        self.idle_timeout = 120
-        self.client = client
+def connect(telnet_client):
+    global CLIENT_LIST
+    global CLIENT_STATE
+    client = Client(telnet_client)
+    CLIENT_LIST.append(client)
+    CLIENT_STATE[client] = {}
+    logging.debug("Added client %s to client list" % str(client))
+    return client
 
-    ## cleanup task run in the main loop
-    def kick_idle(self):
-        """
-        Looks for idle clients and disconnects them by setting active to False.
-        """
-        for client in State.client_list:
-            if client.idle() > self.idle_timeout:
-                logging.info('Kicking idle client %s' % client.addrport())
-                client.active = False
-
-    def in_client_list(self, client):
-        return client in State.client_list
-
-    ## client_list functions 
-    def set_client_list(self, client):
-        """ When a new client logs in, add a reference to their client object in
-            the client_list so that we know everyone who is logged in.
-        """
-        if self.in_client_list(client):
-            logging.warn("\
-Error: Client %s already client list, cannot add." % str(client))
-        else:
-            StateStore.client_list.append(client)
-            logging.debug("Added client %s to client list" % str(client))
-
-    def prune_client_list(client):
-        """ Used for removing client objects from the StateStore.client_list
-        """
+def disconnect(client):
+    global CLIENT_LIST
+    global CLIENT_STATE
+    if isinstance(client, Client):
+        client.client.active = False
         try:
-            StateStore.client_list.remove(client)
-            logging.debug("Removed client %s from client list" % str(client))
+            CLIENT_LIST.remove(client)
+            del(CLIENT_STATE[client])
         except ValueError:
             logging.warn("\
-    Error: Client %s not found in client list, cannot remove." % str(client))
+Error: Client %s not found in client list, cannot remove." % str(client))
+    else:
+        logging.debug("Disconnect was sent a non-client object")
+        raise WrongType
+    
+def kick_idle():
+    """
+    Looks for idle clients and disconnects them by setting active to False.
+    """
+    for c in CLIENT_LIST:
+        if c.client.idle() > c.idle_timeout:
+            logging.info('Kicking idle client %s' % c.client.addrport())
+            disconnect(c)
 
-    def get_client_list(client=None):
-        if client is None:
-            logging.debug("Reading full client list")
-            return StateStore.client_list
+def in_client_list(client):
+    return client in CLIENT_LIST
+
+
+class Client(object):
+    def __init__(self, client, state=None, timeout=600):
+        self.client = client
+        self.idle_timeout = timeout
+        self.user_id = None
+        self.auth_retry = 0
+
+        if state is None:
+            self.state = {}
         else:
-            logging.debug("Reading client list data for " + str(client))
-            return StateStore.client_list[client]
+            self.state = state
 
-    ## client_state private functions
-    def _set_client_state(client, key, value):
-        """ Private function for setting client state
-        """
-        try:
-            CLIENT_STATE[client][key] = value
-        except KeyError:
-            logging.warn("Failed to update client state, client root key does not exist")
+    def __str__(self):
+        if self.user_id is None:
+            return str(self.client)
+        else:
+            return str(self.user_id)
 
-    def _get_client_state(client, key):
-        """ Private function for looking up client state
-        """
-        return CLIENT_STATE[client].get(key, None)
-
-    ## client_state public functions 
-    def initialize_client_state(client):
-        """ Used when a new client logs in, to setup a new root key, and reset
-            any old state data that might be hanging around. 
-        """
-        CLIENT_STATE[client] = {}
-        logging.debug("Initialized a new client state for %s" % str(client))
-
-    def prune_client_state(client):
-        """ Private function for pruning unused state records
-        """
-        try:
-            del(CLIENT_STATE[client])
-            logging.debug("Pruned client state for %s" % str(client))
-        except KeyError:
-            logging.warn("Failed to remove client state, client already pruned.")
-
-    ## related to the client's <application>_state for various internal 'apps'
-    def set_state(client, application, state):
+    def _set_state(self, application, state):
         """ Used for updating the client's state. This is a very commonly used
             function in this application, since the user's state controls their
             location in the program.
         """
-        logging.debug("Setting %s_state for %s" % (application, str(client)))
-        _set_client_state(client, application + '_state', state)
+        logging.debug("Setting %s_state for %s" % (application, str(self.client)))
+        self.state[application + '_state'] = state
 
-    def get_state(client, application):
+    def _get_state(self, application):
         """ Lookup and return the client's state. This is very common, since
             the state controls the user's location within the program.
         """
-        logging.debug("Looking up %s_state for %s" % (application, str(client)))
-        return _get_client_state(client,  application + '_state')
+        logging.debug("Looking up %s_state for %s" % (application, str(self.client)))
+        return self.state.get(application + '_state', None)
 
-    def get_user_id(client):
-        return get_state(client, 'user_id')
+    def initialize_client_state(self):
+        """ Used when a new client logs in, to setup a new root key, and reset
+            any old state data that might be hanging around. 
+        """
+        self.state = {}
+        logging.debug("Initialized a new client state for %s" % str(self.client))
 
-    def get_auth_state(client):
-        return get_state(client, 'auth')
+    def set_auth_state(self, state):
+        states = ['startup', 'set_pass', 'auth_lookup', 'enroll_start', 
+                  'enroll_user', 'enroll_pass', 'enroll_pass2', 
+                  'enroll_first_name', 'enroll_last_name', 'enroll_save',
+                  'auth_success']
+
+        if state in states:
+            self._set_state("auth_status", state)
+
+    def get_auth_state(self):
+        return self.get_state('auth_status')
 
