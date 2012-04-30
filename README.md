@@ -3,11 +3,10 @@ OuttaMyFace
 This is an example of an in-memory graph database.
 
 
-Working With This Thing
+Working with this lib
 -----------------------
 
 ### Load up the demo data:
-
 ```python
 
 import cPickle as pickle
@@ -31,4 +30,35 @@ print user.get_all_users()
 # sorted list of users:
 print user.get_all_users(sort_list=True)
 ```
+
+### Enroll a new user:
+```python
+user.enroll(first_name='Charlos',
+            last_name='Smith',
+            user_id='csmith',
+            password='god',)
+```
+
+### Connect two users:
+```python
+user = 'csmith'
+# SRautela3 is included in the demo data
+face = 'SRautela3'
+connect.outta_my_face(user, face)
+```
+
+### Test to see if two users are connected:
+```python
+actions.is_outta_my_face('JLam2', 'JHinkes1')
+# or test the reverse
+actions.is_in_my_face('JLam2', 'JHinkes1')
+```
+
+### Return the path between two users:
+```python
+actions.find_path('ZLee1', 'ZNagy1')
+# or find the shortest path:
+actions.find_path('ZLee1', 'ZNagy1', find_shortest=True)
+```
+
 
