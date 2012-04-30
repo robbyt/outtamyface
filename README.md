@@ -6,6 +6,11 @@ This is an example of an in-memory graph database.
 Working with this lib
 -----------------------
 
+### Run nosetests
+```bash
+$ nosetests
+```
+
 ### Load up the demo data:
 ```python
 
