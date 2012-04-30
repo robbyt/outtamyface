@@ -10,6 +10,10 @@ class ClientListAction(Exception):
 class WrongType(Exception):
     pass
 
+class UnknownState(Exception):
+    pass
+
+
 def connect(telnet_client):
     global CLIENT_LIST
     global CLIENT_STATE
@@ -95,7 +99,9 @@ class Client(object):
 
         if state in states:
             self._set_state("auth_status", state)
+        else:
+            raise UnknownState
 
     def get_auth_state(self):
-        return self.get_state('auth_status')
+        return self._get_state('auth_status')
 
