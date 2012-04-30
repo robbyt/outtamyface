@@ -80,6 +80,12 @@ def get_user(user_id):
     except TypeError:
         return None
 
+def get_all_users(sort_list=False):
+    users = [u[0] for u in _USER_DATA.data]
+    if sort_list:
+        users.sort()
+    return users
+
 def get_user_count():
     """ dict keeps track of how many elements it contains
         O(1)
