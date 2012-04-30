@@ -16,7 +16,7 @@ def _new_user(last_name,
               user_id,
               password,
               save=False):
-    """ Insert user into data dict.
+    """ Insert user into data dict, abstracted by a class method.
         Each member of the dict must be unique, as identified by the key.
 
         O(1)
@@ -75,10 +75,10 @@ def get_user(user_id):
         O(1)
     """
     u = _USER_DATA.data.get((user_id,), None)
-    if u is None:
-        return
-    user_data = u['data']
-    return user_data
+    try:
+        return u['data']
+    except TypeError:
+        return None
 
 def get_user_count():
     """ dict keeps track of how many elements it contains

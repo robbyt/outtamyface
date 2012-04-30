@@ -9,7 +9,8 @@ _FACE_DATA = FaceData()
 
 ## private functions
 def _connection_generator(user_id, limit=10):
-    """ O(n)
+    """ Each iteration returns the next level of user_id's conections
+        each iteration is O(n)
     """
     level = 0
     branch_data = {}
@@ -63,6 +64,9 @@ def _all_connections(user_id):
     """
     Generators are great, but sometimes we just want all the data.
     This will build a list that contains all of a user's connections.
+
+    O(n^2) because each iteration of the _connection_generator needs to be
+           iterated over again, inside the list comprehension.
     """
     return [con for con in _connection_generator(user_id)]
 
@@ -70,16 +74,22 @@ def _flatten_connections(connections_data):
     """
     Feed this the entire output from the connections_generator, and this will
     flatten that data structure, and return a basic list.
+
+    O(n)
     """
     return [i[1].keys()[0] for i in connections_data]
 
 def _connections_as_set(user_id):
+    """
+    O(n^2)
+    """
     connections = _all_connections(user_id)
     flat_connections = _flatten_connections(connections)
     return set(flat_connections)
 
 def _get_child_keys(user_id, action='OuttaMyFace'):
-    """ returns a list of keys
+    """ returns a list of keys.
+        O(1)
     """
     if type(user_id) is tuple:
         user_id = user_id[0]
@@ -96,7 +106,7 @@ def _get_child_keys(user_id, action='OuttaMyFace'):
 
 def _connection_tester(user_id, face):
     """ test to see if a user is connected by checking each level of the tree
-        O(n^2)
+        O(n)
     """
     for cons in _connection_generator(user_id):
         if (face, ) in cons[1].keys():
@@ -104,14 +114,12 @@ def _connection_tester(user_id, face):
     return False
 
 
-def _connection_path_finder(user_a, user_b):
-    user_a_cons = _all_connections(user_a)
-    user_b_cons = _all_connections(user_b)
-    return 
-
-
 ## public functions
 def get_face_data(user_id, action=None):
+    """ Returns all connection data for a user. This does not detect cycles.
+
+        O(n) or if there are cycles, O(infinit.) 
+    """
     try:
         if action is None:
             return _FACE_DATA.data[(user_id,)]
