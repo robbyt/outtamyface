@@ -11,7 +11,7 @@ class ConnectionProblem(Exception):
 def init_user(user_id):
     return _FACE_DATA.init_user(user_id)
 
-def _connect(user1, action, user2):
+def _connect(user1, user2):
     """ docs
     """
 
@@ -20,20 +20,15 @@ def _connect(user1, action, user2):
     # do the same for u2
     u2_tree_out = _FACE_DATA.data[(user2,)].setdefault(('OuttaMyFace',), {})
 
-    d = {'OuttaMyFace':{
-            'u1_tree': u1_tree_out,
-            'u2_tree': u2_tree_out},
-        }
-
 
     try:
-        if d[action]['u2_tree'] is None:
+        if u2_tree_out is None:
             # if none, then that means u2_tree is empty, so do init
-            _FACE_DATA.data[(user1,)][(action,)][(user2,)] = {}
+            _FACE_DATA.data[(user1,)][('OuttaMyFace',)][(user2,)] = {}
 
         else:
             # else, u2_tree has some data, so update it with a new key
-            _FACE_DATA.data[(user1,)][(action,)][(user2,)] = _FACE_DATA.data[(user2,)][(action,)]
+            _FACE_DATA.data[(user1,)][('OuttaMyFace',)][(user2,)] = _FACE_DATA.data[(user2,)][('OuttaMyFace',)]
 
     except KeyError:
         raise ConnectionProblem
@@ -68,7 +63,7 @@ def outta_my_face(user, face):
         additionally, all faces that are outta on face1 will receive posts
         from user.
     """
-    _connect(user, 'OuttaMyFace', face)
+    _connect(user, face)
 #    _connect(face, 'InMyFace', user)
 
 def in_my_face(user, face):
@@ -84,7 +79,7 @@ def in_my_face(user, face):
         tom == outta request ==> [my contacts]
     """
 #    _connect(user, 'InMyFace', face)
-    _connect(face, 'OuttaMyFace', user)
+    _connect(face, user)
 
 def connect_list(users_list):
     """ Enroll all users in a list
