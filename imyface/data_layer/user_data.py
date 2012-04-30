@@ -30,4 +30,3 @@ class UserData(object):
     def update_subkey(self, user_id, sub_key, value):
         UserData.data.get((user_id,))[sub_key] = value
 
-#USER_DATA = UserData()
