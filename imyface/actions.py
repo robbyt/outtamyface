@@ -1,5 +1,4 @@
 import logging
-from collections import deque
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 
 import user
