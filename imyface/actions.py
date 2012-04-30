@@ -223,8 +223,7 @@ def find_path(user_id, face, path=None, find_shortest=False):
 
     for child in child_keys:
         if child not in path:
-            logging.debug("searching path for: " + str(child))
-
+#            logging.debug("searching path for: " + str(child))
             newpath = find_path(child, face, path)
 
             if newpath and not find_shortest:
