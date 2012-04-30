@@ -2,7 +2,8 @@ import logging
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 logging.debug("Setup logging")
 
-from . import state
+from state import State
+CLIENT_STATE = State()
 
 def enroll(client, msg):
     current_state = CLIENT_STATE[client]['auth_status']
