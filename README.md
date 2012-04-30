@@ -61,4 +61,7 @@ actions.find_path('ZLee1', 'ZNagy1')
 actions.find_path('ZLee1', 'ZNagy1', find_shortest=True)
 ```
 
-
+### Return the intersection between two users:
+```python
+actions.face_space('CFeinstein1', 'VKuchibhotla1')
+```
