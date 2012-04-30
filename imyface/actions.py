@@ -10,7 +10,7 @@ _FACE_DATA = FaceData()
 ## private functions
 def _connection_generator(user_id, limit=10):
     """ Each iteration returns the next level of user_id's conections
-        each iteration is O(n)
+        each iteration is O(log(n))
     """
     level = 0
     branch_data = {}
@@ -46,8 +46,8 @@ def _connection_generator(user_id, limit=10):
                         child_list[i] = [k for k in _get_child_keys(i)]
 
                     except TypeError:
+                        # no more children...
                         pass
-                        #child_list[i].append(('',))
 
                     # finally, mark this parent as visited
                     visited.append(i)
@@ -65,8 +65,8 @@ def _all_connections(user_id):
     Generators are great, but sometimes we just want all the data.
     This will build a list that contains all of a user's connections.
 
-    O(n^2) because each iteration of the _connection_generator needs to be
-           iterated over again, inside the list comprehension.
+    O(n * log(n)) because each iteration of the _connection_generator needs
+                  to be iterated over again, inside the list comprehension.
     """
     return [con for con in _connection_generator(user_id)]
 
@@ -106,7 +106,7 @@ def _get_child_keys(user_id, action='OuttaMyFace'):
 
 def _connection_tester(user_id, face):
     """ test to see if a user is connected by checking each level of the tree
-        O(n)
+        O(log(n)) 
     """
     for cons in _connection_generator(user_id):
         if (face, ) in cons[1].keys():
